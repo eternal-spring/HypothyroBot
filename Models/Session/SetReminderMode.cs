@@ -15,7 +15,6 @@ namespace HypothyroBot.Models.Session
         public async Task<AliceResponse> HandleRequest(AliceRequest aliceRequest, DataBaseContext db)
         {
             string text = "";
-            //User user = DataBaseContext.Me.Users.FirstOrDefault(u => u.Id == aliceRequest.Session.UserId);
             if (aliceRequest.Request.Command.Contains("да"))
             {
                 text = "Отлично";

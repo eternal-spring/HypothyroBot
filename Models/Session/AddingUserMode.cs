@@ -63,7 +63,8 @@ namespace HypothyroBot.Models.Session
                 {
                     return new AliceResponse(aliceRequest, "Не поняла, повторите");
                 }
-                buttons = new List<ButtonModel>() { new ButtonModel("мужской", true), new ButtonModel("женский", true), new ButtonModel("отказываюсь отвечать", true) };
+                buttons = new List<ButtonModel>() { new ButtonModel("мужской", true), new ButtonModel("женский", true),
+                    new ButtonModel("отказываюсь отвечать", true) };
                 text = "Ваш пол?";
             }
             else if (User.Gender == GenderType.None)
@@ -82,7 +83,8 @@ namespace HypothyroBot.Models.Session
                 }
                 else
                 {
-                    buttons = new List<ButtonModel>() { new ButtonModel("мужской", true), new ButtonModel("женский", true), new ButtonModel("отказываюсь отвечать", true) };
+                    buttons = new List<ButtonModel>() { new ButtonModel("мужской", true), new ButtonModel("женский", true), 
+                        new ButtonModel("отказываюсь отвечать", true) };
                     return new AliceResponse(aliceRequest, "Не поняла, повторите", buttons);
                 }
                 text = "Сколько вы весите?";
@@ -101,7 +103,8 @@ namespace HypothyroBot.Models.Session
                 {
                     return new AliceResponse(aliceRequest, "Не поняла, повторите");
                 }
-                if ((User.Gender == GenderType.Female || User.Gender == GenderType.Unknown) && 18 < DateTime.Now.Subtract(User.BirthDate).TotalDays / 365.2425 && DateTime.Now.Subtract(User.BirthDate).TotalDays / 365.2425 < 45)
+                if ((User.Gender == GenderType.Female || User.Gender == GenderType.Unknown) && 18 < 
+                    DateTime.Now.Subtract(User.BirthDate).TotalDays / 365.2425 && DateTime.Now.Subtract(User.BirthDate).TotalDays / 365.2425 < 45)
                 {
                     buttons = new List<ButtonModel>() { new ButtonModel("да", true), new ButtonModel("нет", true), };
                     text = "Вы беременны?";
@@ -112,14 +115,15 @@ namespace HypothyroBot.Models.Session
                     text = "До операции приходилось ли принимать тироксин?";
                 }
             }
-            else if ((User.Gender == GenderType.Female || User.Gender == GenderType.Unknown) && 18 < DateTime.Now.Subtract(User.BirthDate).TotalDays / 365.2425 && DateTime.Now.Subtract(User.BirthDate).TotalDays / 365.2425 < 45)
+            else if ((User.Gender == GenderType.Female || User.Gender == GenderType.Unknown) && 18 < 
+                DateTime.Now.Subtract(User.BirthDate).TotalDays / 365.2425 && DateTime.Now.Subtract(User.BirthDate).TotalDays / 365.2425 < 45)
             {
                 if (aliceRequest.Request.Nlu.Tokens.First().StartsWith("да"))
                 {
                     text = "На данный момент ведение беременности не поддерживается, Спасибо, до свидания.";
                     return new AliceResponse(aliceRequest, text, true)
                     {
-                        SessionState = new SessionState() {Authorised = true, LastResponse = text },
+                        SessionState = new SessionState() {Authorised = true, Id = User.Id, LastResponse = text },
                         //UserStateUpdate = User,
                     };
                 }
@@ -200,8 +204,9 @@ namespace HypothyroBot.Models.Session
                     if (od != null)
                     {
                         User.OperationDate = new DateTime((int)od.Year, (int)od.Month, (int)od.Day);
-                        buttons = new List<ButtonModel>() { new ButtonModel("Да", true), new ButtonModel("Половина", true),new ButtonModel("Перешеек", true),
-                                                                new ButtonModel("Оставлен небольшой остаток доли",true), new ButtonModel("Затрудняюсь ответить",true) };
+                        buttons = new List<ButtonModel>() { new ButtonModel("Да", true), new ButtonModel("Половина", true),
+                            new ButtonModel("Перешеек", true), new ButtonModel("Оставлен небольшой остаток доли",true), 
+                            new ButtonModel("Затрудняюсь ответить",true) };
                         text = "Щитовидная железа была удалена вся?";
                     }
                 }
@@ -239,20 +244,22 @@ namespace HypothyroBot.Models.Session
                 }
                 else
                 {
-                    var b = new List<ButtonModel>() { new ButtonModel("Да", true), new ButtonModel("Половина", true),new ButtonModel("Перешеек", true),
-                                                                new ButtonModel("Оставлен небольшой остаток доли",true), new ButtonModel("Затрудняюсь ответить",true) };
+                    var b = new List<ButtonModel>() { new ButtonModel("Да", true), new ButtonModel("Половина", true),
+                        new ButtonModel("Перешеек", true), new ButtonModel("Оставлен небольшой остаток доли",true), 
+                        new ButtonModel("Затрудняюсь ответить",true) };
                     return new AliceResponse(aliceRequest, "Не поняла, повторите", b);
                 }
                 buttons = new List<ButtonModel>() { new ButtonModel("Фолликулярная аденома/ узловой нетоксический зоб", true),
-                        new ButtonModel("Тиреоидит Хашимото / диффузный токсический зоб", true),new ButtonModel("Папиллярная / фолликулярная карцинома", true),
-                                                                new ButtonModel("Медуллярная карцинома",true), new ButtonModel("Другое",true) };
+                        new ButtonModel("Тиреоидит Хашимото / диффузный токсический зоб", true),
+                    new ButtonModel("Папиллярная / фолликулярная карцинома", true),
+                                      new ButtonModel("Медуллярная карцинома",true), new ButtonModel("Другое",true) };
                 text = "Что пришло по гистологии?";
             }
             else if (User.Pathology == PathologyType.None)
             {
                 var nng = new string[] { "аденома", "узловой", "нетокс" };
                 var dtg = new string[] { "тиреоидит", "хашимото", "диффузный", "токс" };
-                var pfc = new string[] { "папиллярная", "фолликулярная" };
+                var pfc = new string[] { "папиллярная", "фолликулярная карцинома" };
                 var mc = new string[] { "медуллярная" };
                 var a = new string[] { "не знаю", "друг" };
                 if (nng.Any(aliceRequest.Request.Command.Contains))
@@ -279,8 +286,9 @@ namespace HypothyroBot.Models.Session
                 else
                 {
                     var b = new List<ButtonModel>() { new ButtonModel("Фолликулярная аденома/ узловой нетоксический зоб", true),
-                        new ButtonModel("Тиреоидит Хашимото / диффузный токсический зоб", true),new ButtonModel("Папиллярная / фолликулярная карцинома", true),
-                                                                new ButtonModel("Медуллярная карцинома",true), new ButtonModel("Другое",true) };
+                        new ButtonModel("Тиреоидит Хашимото / диффузный токсический зоб", true),
+                        new ButtonModel("Папиллярная / фолликулярная карцинома", true),
+                                  new ButtonModel("Медуллярная карцинома",true), new ButtonModel("Другое",true) };
                     return new AliceResponse(aliceRequest, "Не поняла, повторите", b);
                 }
                 if (User.PretreatmentDose == 0)
@@ -306,7 +314,6 @@ namespace HypothyroBot.Models.Session
                     User.Mode = ModeType.RelevanceAssessment;
                     db.Users.Update(User);
                     await db.SaveChangesAsync();
-                    //aliceRequest.State.Session.Mode = ModeType.RelevanceAssessment;
                     return await new RelevanceAssessmentMode(User).HandleRequest(aliceRequest, db);
                 }
                 else
@@ -444,7 +451,7 @@ namespace HypothyroBot.Models.Session
             await db.SaveChangesAsync();
             var response = new AliceResponse(aliceRequest, text, buttons)
             {
-                SessionState = new SessionState() { Authorised = true, LastResponse = text, LastButtons = buttons },
+                SessionState = new SessionState() { Authorised = true, Id = User.Id, LastResponse = text, LastButtons = buttons },
                 //UserStateUpdate = User,
             };
             return response;

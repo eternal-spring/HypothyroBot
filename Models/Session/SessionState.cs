@@ -10,6 +10,8 @@
         //public ModeType Mode { get; set; }
         [JsonProperty("is_authorised")]
         public bool Authorised { get; set; } = false;
+        [JsonProperty("id")]
+        public string Id { get; set; }
         [JsonProperty("last_response")]
         public string LastResponse { get; set; } = "";
         [JsonProperty("last_buttons")]

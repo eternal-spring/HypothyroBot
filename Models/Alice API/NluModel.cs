@@ -17,7 +17,8 @@ namespace HypothyroBot.Models.Alice_API
 
     internal class EntitiesConverter : JsonConverter<IEnumerable<EntityModel>>
     {
-        public override IEnumerable<EntityModel> ReadJson(JsonReader reader, Type objectType, IEnumerable<EntityModel> existingValue, bool hasExistingValue, JsonSerializer serializer)
+        public override IEnumerable<EntityModel> ReadJson(JsonReader reader, Type objectType, 
+            IEnumerable<EntityModel> existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             if (reader.TokenType == JsonToken.StartArray)
             {
@@ -45,67 +46,3 @@ namespace HypothyroBot.Models.Alice_API
         }
     }
 }
-
-//    internal class EntityModelConverter: JsonConverter
-//    {
-//        public override bool CanConvert(Type objectType)
-//        {
-//            return (objectType == typeof(EntityModel));
-//        }
-
-//        //public override void WriteJson(JsonWriter writer, Version value, JsonSerializer serializer)
-//        //{
-//        //    writer.WriteValue(value.ToString());
-//        //}
-
-//        //public override IEnumerable<EntityModel> ReadJson(JsonReader reader, Type objectType, JsonSerializer serializer)
-//        //{
-//        //    string s = (string)reader.Value;
-
-//        //}
-//        //public static EntityModel ToItem(ref JsonReader reader, JsonSerializer options)
-//        //{
-//        //    if (reader.TokenType == JsonToken.Null)
-//        //    {
-//        //        return null;
-//        //    }
-
-//        //    var readerAtStart = reader;
-
-//        //    string type = null;
-//        //    var jsonDocument = JObject.Parse((string)reader.Value);
-//        //    if (!string.IsNullOrEmpty(type))
-//        //    {
-//        //        if (type == "YANDEX.DATETIME")
-//        //        {
-//        //            return JsonConvert.DeserializeObject<DateTimeModel>(reader)
-//        //        }
-
-//        //    }
-
-//        //    throw new NotSupportedException($"{type ?? "<unknown>"} can not be deserialized");
-//        //}
-
-
-//        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-//        {
-//            JObject jo = JObject.Load(reader);
-//            if (jo["type"].Value<string>() == "YANDEX.DATETIME")
-//            {
-//                //return JsonConvert.DeserializeObject<DateTimeModel>((string)jo);
-//                return jo.ToObject<DateTimeModel>(serializer);
-//            }
-//            if (jo["type"].Value<string>() == "YANDEX.NUMBER")
-//            {
-//                //return JsonConvert.DeserializeObject<NumberModel>((string)jo);
-//                return jo.ToObject<NumberModel>(serializer);
-//            }
-//            return null;
-//        }
-
-//        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-//        {
-//            throw new NotImplementedException();
-//        }
-//    }
-//}

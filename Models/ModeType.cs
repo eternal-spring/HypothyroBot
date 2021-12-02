@@ -7,6 +7,7 @@
         SetReminder,
         OnReminder,
         LimitationChecking,
-        ResultsCollecting
+        ResultsCollecting,
+        Control
     }
 }

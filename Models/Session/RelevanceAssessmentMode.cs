@@ -31,7 +31,7 @@ namespace HypothyroBot.Models.Session
             await db.SaveChangesAsync();
             var response = new AliceResponse(aliceRequest, text, buttons)
             {
-                SessionState = new SessionState() {Authorised = true, LastResponse = text, LastButtons = buttons },
+                SessionState = new SessionState() {Authorised = true, Id=User.Id, LastResponse = text, LastButtons = buttons },
                 //UserStateUpdate = user,
             };
             return response;
