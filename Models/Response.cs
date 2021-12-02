@@ -12,7 +12,8 @@ namespace HypothyroBot.Models
         }
         public async Task<AliceResponse> AliceResponse(AliceRequest aliceRequest, DataBaseContext db)
         {
-            User user = await db.Users.FindAsync(aliceRequest.Session.UserId);
+
+            User user = await db.Users.FindAsync(aliceRequest.State?.Session?.Id ?? aliceRequest.Session.UserId);
             switch (user?.Mode)
             {
                 default:

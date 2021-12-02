@@ -8,6 +8,7 @@
         OnReminder,
         LimitationChecking,
         ResultsCollecting,
-        Control
+        Control,
+        UserDataCorrection
     }
 }

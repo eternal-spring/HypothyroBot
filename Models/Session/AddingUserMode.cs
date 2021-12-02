@@ -48,10 +48,14 @@ namespace HypothyroBot.Models.Session
                 try
                 {
                     var bd = (from date in aliceRequest.Request.Nlu.Entities
-                               where (aliceRequest.Request.Nlu.Entities.Count() > 0 && date as DateTimeModel != null)
+                               where (aliceRequest.Request.Nlu.Entities.Any() && date as DateTimeModel != null)
                                select (date as DateTimeModel).Value).First();
                     if (bd != null)
                     {
+                        if ((int)bd.Year < 2000)
+                        {
+                            bd.Year += 2000;
+                        }
                         User.BirthDate = new DateTime((int)bd.Year, (int)bd.Month, (int)bd.Day);
                     }
                     if ((int.Parse(DateTime.Now.ToString("yyyyMMdd")) - int.Parse(User.BirthDate.ToString("yyyyMMdd"))) / 10000 < 18)
@@ -77,7 +81,7 @@ namespace HypothyroBot.Models.Session
                 {
                     User.Gender = GenderType.Female;
                 }
-                else if (aliceRequest.Request.Nlu.Tokens.First().Contains("отказываюсь отвечать"))
+                else if (aliceRequest.Request.Command.Contains("отказываюсь отвечать"))
                 {
                     User.Gender = GenderType.Unknown;
                 }
@@ -203,6 +207,10 @@ namespace HypothyroBot.Models.Session
                                select (date as DateTimeModel).Value).First();
                     if (od != null)
                     {
+                        if ((int)od.Year < 2000)
+                        {
+                            od.Year += 2000;
+                        }
                         User.OperationDate = new DateTime((int)od.Year, (int)od.Month, (int)od.Day);
                         buttons = new List<ButtonModel>() { new ButtonModel("Да", true), new ButtonModel("Половина", true),
                             new ButtonModel("Перешеек", true), new ButtonModel("Оставлен небольшой остаток доли",true), 
@@ -311,7 +319,6 @@ namespace HypothyroBot.Models.Session
                 else if (aliceRequest.Request.Command.Contains("не"))
                 {
                     User.TreatmentDose = 0;
-                    User.Mode = ModeType.RelevanceAssessment;
                     db.Users.Update(User);
                     await db.SaveChangesAsync();
                     return await new RelevanceAssessmentMode(User).HandleRequest(aliceRequest, db);
@@ -369,10 +376,9 @@ namespace HypothyroBot.Models.Session
                     await db.SaveChangesAsync();
                     return await new LimitationCheckingMode(User).HandleRequest(aliceRequest, db);
                 }
-                buttons = new List<ButtonModel>() { new ButtonModel("Да", true), new ButtonModel("Нет", true) };
-                text = "Хотите ли вы получать напоминания о необходимости контролировать гормоны?";
-                User.Mode = ModeType.SetReminder; 
-
+                db.Users.Update(User);
+                await db.SaveChangesAsync();
+                return await new RelevanceAssessmentMode(User).HandleRequest(aliceRequest, db);
             }
             else if (User.TreatmentDose == -2)
             {
@@ -387,7 +393,6 @@ namespace HypothyroBot.Models.Session
                     }
                     else if (User.TreatmentDose == 0)
                     {
-                        User.Mode = ModeType.RelevanceAssessment;
                         db.Users.Update(User);
                         await db.SaveChangesAsync();
                         //aliceRequest.State.Session.Mode = ModeType.RelevanceAssessment;
@@ -442,7 +447,6 @@ namespace HypothyroBot.Models.Session
                     await db.SaveChangesAsync();
                     return await new LimitationCheckingMode(User).HandleRequest(aliceRequest, db);
                 }
-                User.Mode = ModeType.RelevanceAssessment;
                 db.Users.Update(User);
                 await db.SaveChangesAsync();
                 return await new RelevanceAssessmentMode(User).HandleRequest(aliceRequest, db);

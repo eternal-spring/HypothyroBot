@@ -4,8 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace HypothyroBot.Models.Session
@@ -63,7 +61,7 @@ namespace HypothyroBot.Models.Session
                         await db.SaveChangesAsync();
                         var response = new AliceResponse(aliceRequest, text, buttons)
                         {
-                            SessionState = new SessionState() { Authorised = true },
+                            SessionState = aliceRequest.State.Session,
                         };
                         return response;
                     }
@@ -158,7 +156,13 @@ namespace HypothyroBot.Models.Session
                                 }
                             }
                         }
-                        throw new NotImplementedException();
+                        db.Users.Update(User);
+                        await db.SaveChangesAsync();
+                        var response = new AliceResponse(aliceRequest, text, buttons)
+                        {
+                            SessionState = aliceRequest.State.Session,
+                        };
+                        return response;
                     }
             }
         }

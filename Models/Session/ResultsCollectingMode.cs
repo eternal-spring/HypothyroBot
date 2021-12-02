@@ -3,7 +3,6 @@ using HypothyroBot.Models.Session.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace HypothyroBot.Models.Session
@@ -15,7 +14,6 @@ namespace HypothyroBot.Models.Session
         {
             User = user;
         }
-
         public async Task<AliceResponse> HandleRequest(AliceRequest aliceRequest, DataBaseContext db)
         {
             string text = "";
@@ -56,6 +54,10 @@ namespace HypothyroBot.Models.Session
                                   select (date as DateTimeModel).Value).First();
                         if (td != null)
                         {
+                            if ((int)td.Year < 2000)
+                            {
+                                td.Year += 2000;
+                            }
                             User.TestDate = new DateTime((int)td.Year, (int)td.Month, (int)td.Day);
                         }
                         if (User.TestDate > User.OperationDate.Add(User.checkinterval))
