@@ -14,7 +14,7 @@ namespace HypothyroBot.Models.Session
         {
             User = user;
         }
-        public async Task<AliceResponse> HandleRequest(AliceRequest aliceRequest, DataBaseContext db)
+        public async Task<AliceResponse> HandleRequest(AliceRequest aliceRequest, UsersDataBaseContext db)
         {
             string text = "";
             string tts = null;
@@ -60,13 +60,15 @@ namespace HypothyroBot.Models.Session
                             }
                             User.TestDate = new DateTime((int)td.Year, (int)td.Month, (int)td.Day);
                         }
-                        if (User.TestDate > User.OperationDate.Add(User.checkinterval))
+                        if (User.TestDate < User.OperationDate.AddDays(User.checkinterval))
                         {
                             text = $"Данный анализ не актуален. Прошло более {User.checkinterval} дней с момента сдачи. " +
                                 $"Рекомендуется повторить.";
                         }
                         else
                         {
+                            db.Users.Update(User);
+                            await db.SaveChangesAsync();
                             return await new ControlMode(User).HandleRequest(aliceRequest, db);
                         }
                     }
@@ -76,7 +78,14 @@ namespace HypothyroBot.Models.Session
                     }
                 }
             }
-            throw new NotImplementedException();
+            db.Users.Update(User);
+            await db.SaveChangesAsync();
+            var response = new AliceResponse(aliceRequest, text, tts, buttons)
+            {
+                SessionState = new SessionState() { Authorised = true, LastResponse = text },
+                //UserStateUpdate = user,
+            };
+            return response;
         }
     }
 }

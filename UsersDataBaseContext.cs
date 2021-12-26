@@ -3,11 +3,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HypothyroBot
 {
-    public class DataBaseContext : DbContext
+    public class UsersDataBaseContext : DbContext
     {
-        public static DataBaseContext Me;
         public DbSet<User> Users { get; set; }
-        public DataBaseContext(DbContextOptions<DataBaseContext> options)
+        public UsersDataBaseContext(DbContextOptions<UsersDataBaseContext> options)
             : base(options)
         {
             Database.EnsureCreated();

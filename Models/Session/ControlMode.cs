@@ -15,7 +15,7 @@ namespace HypothyroBot.Models.Session
         {
             User = user;
         }
-        public async Task<AliceResponse> HandleRequest(AliceRequest aliceRequest, DataBaseContext db)
+        public async Task<AliceResponse> HandleRequest(AliceRequest aliceRequest, UsersDataBaseContext db)
         {
             string text = "";
             string tts = null;
@@ -37,7 +37,8 @@ namespace HypothyroBot.Models.Session
                                     "решение о заместительной терапии можно отложить на 2 месяца. " +
                                     "Давайте проконтролируем ТТГ.";
                             }
-                            User.checkinterval = new TimeSpan(60, 0, 0, 0);
+                            User.checkinterval = 60; 
+                            User.Mode = ModeType.OnReminder;
                         }
                         else if (User.TreatmentDose > 0 && User.TSH < User.lowpthslev)
                         {
@@ -48,13 +49,15 @@ namespace HypothyroBot.Models.Session
                                 text += (User.BirthDate.CompareTo(DateTime.Now.AddYears(-70)) < 0 || User.Weight < 55) ? "12,5 мкг." :
                                     "25 мкг. ";
                                 text += "Затем следует проконтролировать ТТГ через 2 месяца";
-                                User.checkinterval = new TimeSpan(60, 0, 0, 0);
+                                User.checkinterval = 60;
+                                User.Mode = ModeType.OnReminder;
 
                             }
                             else if (aliceRequest.Request.Nlu.Tokens.First().StartsWith("не"))
                             {
                                 text = "Контроль через 3 месяца.";
-                                User.checkinterval = new TimeSpan(90, 0, 0, 0);
+                                User.checkinterval = 90; 
+                                User.Mode = ModeType.OnReminder;
                             }
                         }
                         db.Users.Update(User);
@@ -72,7 +75,7 @@ namespace HypothyroBot.Models.Session
                             if (User.TSH < User.lowpthslev)
                             {
                                 text = "Есть риск что у вас тиреотоксикоз. Если вы ранее не сталкивались " +
-                                    "с этим нужно сдать кровь на свободные фракции T3 и Т4 и Антитела к " +
+                                    "с этим нужно сдать кровь на свободные фракции T3 и Т4 и антитела к " +
                                     "рецептору ТТГ и обратиться к эндокринологу.";
                             }
                             else if (User.TSH > User.uppthslev)
@@ -85,6 +88,7 @@ namespace HypothyroBot.Models.Session
                                         "не настолько значима. Если вы себя нормально чувствуете можно не спешить " +
                                         "с назначением гормонов. Имеются ли у Вас жалобы на сонливость, редкий пульс?";
                                     buttons = new List<ButtonModel>() { new ButtonModel("да", true), new ButtonModel("нет", true), };
+                                    User.Mode = ModeType.Control;
                                 }
                                 else if (User.TSH > 6)
                                 {
@@ -93,18 +97,20 @@ namespace HypothyroBot.Models.Session
                                     if (User.TSH > 10)
                                     {
                                         text += "1,5 месяца";
-                                        User.checkinterval = new TimeSpan(45, 0, 0, 0);
+                                        User.checkinterval = 45;
                                     }
                                     else
                                     {
                                         text += "2 месяца";
-                                        User.checkinterval = new TimeSpan(60, 0, 0, 0);
+                                        User.checkinterval = 60;
                                     }
+                                    User.Mode = ModeType.OnReminder;
                                 }
                             }
                             else
                             {
                                 text = "У вас отличный уровень ТТГ. Следующий раз контроль через 6 месяцев";
+                                User.Mode = ModeType.OnReminder;
                             }
                         }
                         else if (User.TreatmentDose > 0)
@@ -119,8 +125,8 @@ namespace HypothyroBot.Models.Session
                                         "группы риска. У вас были множественные метастазы, операции по поводу рецидивов, " +
                                         "планируется терапия радиоактивным йодом, имеются высокие уровни тиреоглобуллина?";
                                     buttons = new List<ButtonModel>() { new ButtonModel("да", true), new ButtonModel("нет", true), };
-
                                 }
+                                User.Mode = ModeType.Control;
                             }
                             else if (User.TSH > User.uppthslev)
                             {
@@ -130,30 +136,32 @@ namespace HypothyroBot.Models.Session
                                     text += (User.BirthDate.CompareTo(DateTime.Now.AddYears(-70)) < 0 || User.Weight < 55) ? "12,5 мкг." :
                                         "25 мкг.";
                                     text += "Контроль ТТГ через 2 месяца.";
-                                    User.checkinterval = new TimeSpan(60, 0, 0, 0);
+                                    User.checkinterval = 60;
                                 }
                                 else if (User.uppthslev > 10)
                                 {
                                     text = "У вас выраженный недостаток гормонов. Вам нужно срочно увеличить дозу " +
                                         "на 25 мкг. Контроль ТТГ через 1,5 месяца.";
-                                    User.checkinterval = new TimeSpan(45, 0, 0, 0);
+                                    User.checkinterval = 45;
                                 }
+                                User.Mode = ModeType.OnReminder;
                             }
                             else
                             {
                                 text = $"У вас отличный уровень ТТГ. Продолжайте принимать " +
                                 $"{((DescriptionAttribute)User.TreatmentDrug.GetType().GetMember(User.TreatmentDrug.ToString())[0].GetCustomAttributes(typeof(DescriptionAttribute), false)[0]).Description} " +
                                 $"по {User.TreatmentDose} мкг. Следующий раз контроль через ";
-                                if (User.checkinterval.Days >= 180)
+                                if (User.checkinterval >= 180)
                                 {
                                     text += "год";
-                                    User.checkinterval = new TimeSpan(365, 0, 0, 0);
+                                    User.checkinterval = 365;
                                 }
                                 else
                                 {
                                     text += "6 месяцев";
-                                    User.checkinterval = new TimeSpan(180, 0, 0, 0);
+                                    User.checkinterval = 180;
                                 }
+                                User.Mode = ModeType.OnReminder;
                             }
                         }
                         db.Users.Update(User);

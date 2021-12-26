@@ -9,9 +9,9 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HypothyroBot.Migrations
 {
-    [DbContext(typeof(DataBaseContext))]
-    [Migration("20211121154737_NewMigration")]
-    partial class NewMigration
+    [DbContext(typeof(UsersDataBaseContext))]
+    [Migration("20211202183850_newmigration")]
+    partial class newmigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -26,18 +26,12 @@ namespace HypothyroBot.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("Date");
-
-                    b.Property<DateTime>("DateOfOperation")
+                    b.Property<DateTime>("BirthDate")
                         .HasColumnType("Date");
 
                     b.Property<string>("Gender")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Histology")
                         .IsRequired()
-                        .HasColumnType("nvarchar(32)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Mode")
                         .IsRequired()
@@ -46,12 +40,25 @@ namespace HypothyroBot.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("OperationDate")
+                        .HasColumnType("Date");
+
+                    b.Property<string>("Pathology")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(32)");
+
                     b.Property<double>("PretreatmentDose")
                         .HasColumnType("float");
 
                     b.Property<string>("PretreatmentDrug")
                         .IsRequired()
                         .HasColumnType("nvarchar(24)");
+
+                    b.Property<double>("TSH")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("TestDate")
+                        .HasColumnType("Date");
 
                     b.Property<string>("ThyroidCondition")
                         .IsRequired()
@@ -66,6 +73,9 @@ namespace HypothyroBot.Migrations
 
                     b.Property<double>("Weight")
                         .HasColumnType("float");
+
+                    b.Property<long>("checkinterval")
+                        .HasColumnType("bigint");
 
                     b.Property<double>("lowpthslev")
                         .HasColumnType("float");

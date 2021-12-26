@@ -4,14 +4,16 @@ using HypothyroBot;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HypothyroBot.Migrations
 {
     [DbContext(typeof(UsersDataBaseContext))]
-    partial class DataBaseContextModelSnapshot : ModelSnapshot
+    [Migration("20211202103638_AddTSH")]
+    partial class AddTSH
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -72,8 +74,8 @@ namespace HypothyroBot.Migrations
                     b.Property<double>("Weight")
                         .HasColumnType("float");
 
-                    b.Property<long>("checkinterval")
-                        .HasColumnType("bigint");
+                    b.Property<TimeSpan>("checkinterval")
+                        .HasColumnType("time");
 
                     b.Property<double>("lowpthslev")
                         .HasColumnType("float");

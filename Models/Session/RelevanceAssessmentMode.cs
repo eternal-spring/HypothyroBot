@@ -1,7 +1,9 @@
 ﻿using HypothyroBot.Models.Alice_API;
 using HypothyroBot.Models.Session.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Threading.Tasks;
 namespace HypothyroBot.Models.Session
 {
@@ -12,7 +14,7 @@ namespace HypothyroBot.Models.Session
         {
             User = user;
         }
-        public async Task<AliceResponse> HandleRequest(AliceRequest aliceRequest, DataBaseContext db)
+        public async Task<AliceResponse> HandleRequest(AliceRequest aliceRequest, UsersDataBaseContext db)
         {
             string text = "";
             switch (User.Mode)
@@ -32,7 +34,7 @@ namespace HypothyroBot.Models.Session
                         }
                         else
                         {
-                            text = $"Итак, вы {User.Name}, родились {User.BirthDate:D}, весите {User.Weight} кг, ";
+                            text = $"Итак, вы {User.Name}, родились {User.BirthDate.ToString("D", CultureInfo.CreateSpecificCulture("ru-RU"))}, весите {User.Weight} кг, ";
                             if (User.Gender != GenderType.None)
                             {
                                 text += $"{ ((DescriptionAttribute)User.Gender.GetType().GetMember(User.Gender.ToString())[0].GetCustomAttributes(typeof(DescriptionAttribute), false)[0]).Description}, ";
@@ -53,7 +55,7 @@ namespace HypothyroBot.Models.Session
                                     text += $"{ ((DescriptionAttribute)User.PretreatmentDrug.GetType().GetMember(User.PretreatmentDrug.ToString())[0].GetCustomAttributes(typeof(DescriptionAttribute), false)[0]).Description}а, ";
                                 }
                             }
-                            text += $"Дата операции: {User.OperationDate:D}, ";
+                            text += $"дата операции: {User.OperationDate.ToString("D", CultureInfo.CreateSpecificCulture("ru-RU"))}, ";
                             if (User.ThyroidCondition == ThyroidType.CompletelyRemoved)
                             {
                                 text += "щитовидка была удалена вся, ";
@@ -103,16 +105,26 @@ namespace HypothyroBot.Models.Session
                     {
                         if (aliceRequest.Request.Command.Contains("да"))
                         {
-                            text = "Хотите ли вы получать напоминания о необходимости контролировать гормоны?";
-                            var buttons = new List<ButtonModel>() { new ButtonModel("Да", true), new ButtonModel("Нет", true) };
-                            User.Mode = ModeType.SetReminder;
-                            db.Users.Update(User);
-                            await db.SaveChangesAsync();
-                            var response = new AliceResponse(aliceRequest, text, buttons)
+                            if ((DateTime.Now - User.OperationDate).TotalDays >= 56)
                             {
-                                SessionState = new SessionState() { Authorised = true, Id = User.Id, LastResponse = text, LastButtons = buttons },
-                            };
-                            return response;
+                                User.Mode = ModeType.LimitationChecking;
+                                db.Users.Update(User);
+                                await db.SaveChangesAsync();
+                                return await new LimitationCheckingMode(User).HandleRequest(aliceRequest, db);
+                            }
+                            else
+                            {
+                                text = "Хотите ли вы получать напоминания о необходимости контролировать гормоны?";
+                                var buttons = new List<ButtonModel>() { new ButtonModel("Да", true), new ButtonModel("Нет", true) };
+                                User.Mode = ModeType.SetReminder;
+                                db.Users.Update(User);
+                                await db.SaveChangesAsync();
+                                var response = new AliceResponse(aliceRequest, text, buttons)
+                                {
+                                    SessionState = new SessionState() { Authorised = true, Id = User.Id, LastResponse = text, LastButtons = buttons },
+                                };
+                                return response;
+                            }
                         }
                         else if (aliceRequest.Request.Command.Contains("не"))
                         {

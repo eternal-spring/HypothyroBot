@@ -30,7 +30,7 @@ namespace HypothyroBot.Models
         public PathologyType Pathology { get; set; }
         public double lowpthslev { get; set; } = 0.35;
         public double uppthslev { get; set; } = 4;
-        public TimeSpan checkinterval { get; set; } = new TimeSpan(60,0,0,0);
+        public double checkinterval { get; set; } = 60;
         public double TSH { get; set; }
         [Column(TypeName = "Date")]
         public DateTime TestDate { get; set; }

@@ -12,7 +12,7 @@ namespace HypothyroBot.Models.Session
         {
             User = user;
         }
-        public async Task<AliceResponse> HandleRequest(AliceRequest aliceRequest, DataBaseContext db)
+        public async Task<AliceResponse> HandleRequest(AliceRequest aliceRequest, UsersDataBaseContext db)
         {
             string text = "Сдавали ли вы после этого контрольный анализ на ТТГ?";
             string tts = null;
@@ -21,7 +21,7 @@ namespace HypothyroBot.Models.Session
             {
                 if (aliceRequest.Request.Command.Contains("да"))
                 {
-                    text = "Какой?";
+                    return await new ResultsCollectingMode(User).HandleRequest(aliceRequest, db);
                 }
                 else if (aliceRequest.Request.Command.Contains("не"))
                 {

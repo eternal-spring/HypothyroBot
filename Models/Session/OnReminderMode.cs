@@ -14,7 +14,7 @@ namespace HypothyroBot.Models.Session
         {
             User = user;
         }
-        public async Task<AliceResponse> HandleRequest(AliceRequest aliceRequest, DataBaseContext db)
+        public async Task<AliceResponse> HandleRequest(AliceRequest aliceRequest, UsersDataBaseContext db)
         {
             string text = "";
             string tts = "";
@@ -48,9 +48,9 @@ namespace HypothyroBot.Models.Session
                 {
                     return await new ResultsCollectingMode(User).HandleRequest(aliceRequest, db);
                 }
-                else if (new string[] { "когда", "cдавать" }.All(aliceRequest.Request.Command.Contains))
+                else if (aliceRequest.Request.Command.Contains("когда"))
                 {
-                    text = $"Вам нужно сдать анализы не позднее, чем {User.OperationDate.Add(User.checkinterval):D}";
+                    text = $"Вам нужно сдать анализы не позднее, чем {User.OperationDate.AddDays(User.checkinterval):D}";
                 }
                 else if (aliceRequest.Request.Command.Contains("прошл"))
                 {

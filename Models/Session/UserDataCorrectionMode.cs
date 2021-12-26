@@ -16,7 +16,7 @@ namespace HypothyroBot.Models.Session
         {
             User = user;
         }
-        public async Task<AliceResponse> HandleRequest(AliceRequest aliceRequest, DataBaseContext db)
+        public async Task<AliceResponse> HandleRequest(AliceRequest aliceRequest, UsersDataBaseContext db)
         {
             string text = "";
             var buttons = new List<ButtonModel>();
@@ -42,7 +42,7 @@ namespace HypothyroBot.Models.Session
                     {
                         if (User.Name == null)
                         {
-                            User.Name = aliceRequest.Request.Command.Trim();
+                            User.Name = aliceRequest.Request.OriginalUtterance.Trim();
                             text = $"Теперь ваше имя - {User.Name}.";
                         }
                         else if (User.BirthDate == default)
@@ -317,7 +317,8 @@ namespace HypothyroBot.Models.Session
                                 text += $"Препарат - { ((DescriptionAttribute)User.TreatmentDrug.GetType().GetMember(User.TreatmentDrug.ToString())[0].GetCustomAttributes(typeof(DescriptionAttribute), false)[0]).Description}. ";
                             }
                         }
-                        text += "Скажите, что ещё нужно исправить. Если всё верно, скажите Всё верно";
+                        text += "Всё верно?";
+                        buttons = new List<ButtonModel>() { new ButtonModel("Да", true), new ButtonModel("Нет", true) };
                         if (aliceRequest.Request.Command.Contains("имя"))
                         {
                             text = "Назовите имя";
@@ -374,11 +375,18 @@ namespace HypothyroBot.Models.Session
                             User.PretreatmentDose = -2;
                             User.PretreatmentDrug = DrugType.None;
                         }
-                        else if (aliceRequest.Request.Command.Contains("всё верно"))
+                        else if (aliceRequest.Request.Command.Contains("да"))
                         {
                             text = "Хотите ли вы получать напоминания о необходимости контролировать гормоны?";
                             buttons = new List<ButtonModel>() { new ButtonModel("Да", true), new ButtonModel("Нет", true) };
                             User.Mode = ModeType.SetReminder;
+                        }
+                        else if (aliceRequest.Request.Command.Contains("не"))
+                        {
+                            User.Mode = ModeType.RelevanceAssessment;
+                            db.Users.Update(User);
+                            await db.SaveChangesAsync();
+                            return await new UserDataCorrectionMode(User).HandleRequest(aliceRequest, db);
                         }
                         db.Users.Update(User);
                         await db.SaveChangesAsync(); 

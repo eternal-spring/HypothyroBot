@@ -20,7 +20,7 @@ namespace HypothyroBot
         public void ConfigureServices(IServiceCollection services)
         {
             string connectionString = Configuration.GetConnectionString("DataBaseContext");
-            services.AddDbContext<DataBaseContext>(options
+            services.AddDbContext<UsersDataBaseContext>(options
                 => { options.UseSqlServer(connectionString, sqlServerOptionsAction: sqlOptions => { sqlOptions.EnableRetryOnFailure(); }); });
             services.AddControllers().AddNewtonsoftJson();
             services.AddScoped<Response>();

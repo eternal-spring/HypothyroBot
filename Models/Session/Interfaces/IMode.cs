@@ -5,6 +5,6 @@ namespace HypothyroBot.Models.Session.Interfaces
 {
     public interface IMode
     {
-        public abstract Task<AliceResponse> HandleRequest(AliceRequest aliceRequest, DataBaseContext db);
+        public abstract Task<AliceResponse> HandleRequest(AliceRequest aliceRequest, UsersDataBaseContext db);
     }
 }

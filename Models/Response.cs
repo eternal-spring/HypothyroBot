@@ -6,20 +6,12 @@ namespace HypothyroBot.Models
 {
     public class Response
     {
-        public Response()
-        {
-
-        }
-        public async Task<AliceResponse> AliceResponse(AliceRequest aliceRequest, DataBaseContext db)
+        public async Task<AliceResponse> AliceResponse(AliceRequest aliceRequest, UsersDataBaseContext db)
         {
 
             User user = await db.Users.FindAsync(aliceRequest.State?.Session?.Id ?? aliceRequest.Session.UserId);
             switch (user?.Mode)
             {
-                default:
-                    {
-                        return await new AddingUserMode(user).HandleRequest(aliceRequest, db);
-                    }
                 case ModeType.RelevanceAssessment:
                     {
                         return await new RelevanceAssessmentMode(user).HandleRequest(aliceRequest, db);
@@ -35,6 +27,22 @@ namespace HypothyroBot.Models
                 case ModeType.LimitationChecking:
                     {
                         return await new LimitationCheckingMode(user).HandleRequest(aliceRequest, db);
+                    }
+                case ModeType.ResultsCollecting:
+                    {
+                        return await new ResultsCollectingMode(user).HandleRequest(aliceRequest, db);
+                    }
+                case ModeType.Control:
+                    {
+                        return await new ControlMode(user).HandleRequest(aliceRequest, db);
+                    }
+                case ModeType.UserDataCorrection:
+                    {
+                        return await new UserDataCorrectionMode(user).HandleRequest(aliceRequest, db);
+                    }
+                default:
+                    {
+                        return await new AddingUserMode(user).HandleRequest(aliceRequest, db);
                     }
             }
         }

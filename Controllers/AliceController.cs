@@ -11,8 +11,8 @@ namespace HypothyroBot.Controllers
     public class AliceController : ControllerBase
     {
         private readonly Response _aliceResponse;
-        private readonly DataBaseContext _dataBaseContext;
-        public AliceController(Response aliceResponse, DataBaseContext dataBaseContext)
+        private readonly UsersDataBaseContext _dataBaseContext;
+        public AliceController(Response aliceResponse, UsersDataBaseContext dataBaseContext)
         {
             _aliceResponse = aliceResponse;
             _dataBaseContext = dataBaseContext;
@@ -22,8 +22,6 @@ namespace HypothyroBot.Controllers
         {            
             try
             {
-                //var aliceRequest = JsonConvert.DeserializeObject<AliceRequest>(request.ToString());
-                //return null;
                 var response = await _aliceResponse.AliceResponse(request, _dataBaseContext);
                 return Ok(response);
             }

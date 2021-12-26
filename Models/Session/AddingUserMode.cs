@@ -14,7 +14,7 @@ namespace HypothyroBot.Models.Session
         {
             User = user;
         }
-        public async Task<AliceResponse> HandleRequest(AliceRequest aliceRequest, DataBaseContext db)
+        public async Task<AliceResponse> HandleRequest(AliceRequest aliceRequest, UsersDataBaseContext db)
         {
             string text = "";
             string tts = null;
@@ -30,7 +30,7 @@ namespace HypothyroBot.Models.Session
                 };
                 db.Users.Add(User);
                 await db.SaveChangesAsync();
-                text = "Привет, я бот для наблюдения за функцией щитовидной железы у оперированных пациентов " +
+                text = "Привет, я навык для наблюдения за функцией щитовидной железы у оперированных пациентов " +
                                                       "или контроля заместительной терапии. Давайте знакомиться! Представьтесь";
             }
             else if (aliceRequest.Session.New)
@@ -40,7 +40,7 @@ namespace HypothyroBot.Models.Session
             }
             else if (User.Name == null)
             {
-                User.Name = aliceRequest.Request.Command.Trim();
+                User.Name = aliceRequest.Request.OriginalUtterance.Trim();
                 text = "Скажите дату рождения";
             }
             else if (User.BirthDate == default)
@@ -369,13 +369,13 @@ namespace HypothyroBot.Models.Session
                                                                                                                 new ButtonModel("другой", true) };
                     return new AliceResponse(aliceRequest, "Не поняла, повторите", buttons);
                 }
-                if ((DateTime.Now - User.OperationDate).TotalDays >= 56)
-                {
-                    User.Mode = ModeType.LimitationChecking;
-                    db.Users.Update(User);
-                    await db.SaveChangesAsync();
-                    return await new LimitationCheckingMode(User).HandleRequest(aliceRequest, db);
-                }
+                //if ((DateTime.Now - User.OperationDate).TotalDays >= 56)
+                //{
+                //    User.Mode = ModeType.LimitationChecking;
+                //    db.Users.Update(User);
+                //    await db.SaveChangesAsync();
+                //    return await new LimitationCheckingMode(User).HandleRequest(aliceRequest, db);
+                //}
                 db.Users.Update(User);
                 await db.SaveChangesAsync();
                 return await new RelevanceAssessmentMode(User).HandleRequest(aliceRequest, db);
@@ -440,13 +440,13 @@ namespace HypothyroBot.Models.Session
                         return new AliceResponse(aliceRequest, "Не поняла, повторите");
                     }
                 }
-                if ((DateTime.Now - User.OperationDate).TotalDays >= 56)
-                {
-                    User.Mode = ModeType.LimitationChecking;
-                    db.Users.Update(User);
-                    await db.SaveChangesAsync();
-                    return await new LimitationCheckingMode(User).HandleRequest(aliceRequest, db);
-                }
+                //if ((DateTime.Now - User.OperationDate).TotalDays >= 56)
+                //{
+                //    User.Mode = ModeType.LimitationChecking;
+                //    db.Users.Update(User);
+                //    await db.SaveChangesAsync();
+                //    return await new LimitationCheckingMode(User).HandleRequest(aliceRequest, db);
+                //}
                 db.Users.Update(User);
                 await db.SaveChangesAsync();
                 return await new RelevanceAssessmentMode(User).HandleRequest(aliceRequest, db);
