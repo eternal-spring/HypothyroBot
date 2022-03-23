@@ -1,15 +1,16 @@
 ﻿using HypothyroBot.Models.Alice_API;
 using HypothyroBot.Models.Session;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace HypothyroBot.Models
 {
     public class Response
     {
-        public async Task<AliceResponse> AliceResponse(AliceRequest aliceRequest, UsersDataBaseContext db)
+        public async Task<AliceResponse> AliceResponse(AliceRequest aliceRequest, ApplicationContext db)
         {
-
-            User user = await db.Users.FindAsync(aliceRequest.State?.Session?.Id ?? aliceRequest.Session.UserId);
+            User user = await db.Users.FindAsync(/*aliceRequest.State?.Session?.Id ??*/ aliceRequest.Session.UserId);
             switch (user?.Mode)
             {
                 case ModeType.RelevanceAssessment:

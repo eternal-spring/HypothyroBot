@@ -15,7 +15,7 @@ namespace HypothyroBot.Models.Session
         {
             User = user;
         }
-        public async Task<AliceResponse> HandleRequest(AliceRequest aliceRequest, UsersDataBaseContext db)
+        public async Task<AliceResponse> HandleRequest(AliceRequest aliceRequest, ApplicationContext db)
         {
             string text = "";
             string tts = null;
@@ -24,7 +24,7 @@ namespace HypothyroBot.Models.Session
             {
                 case ModeType.Control:
                     {
-                        if (User.TreatmentDose == 0 && User.TSH > User.uppthslev)
+                        if (User.TreatmentDose == 0 && User.Tests?.Last()?.TshLevel > User.upTshLevel)
                         {
                             if (aliceRequest.Request.Nlu.Tokens.First().StartsWith("да"))
                             {
@@ -40,13 +40,13 @@ namespace HypothyroBot.Models.Session
                             User.checkinterval = 60; 
                             User.Mode = ModeType.OnReminder;
                         }
-                        else if (User.TreatmentDose > 0 && User.TSH < User.lowpthslev)
+                        else if (User.TreatmentDose > 0 && User.Tests?.Last()?.TshLevel < User.lowTshLevel)
                         {
                             if (aliceRequest.Request.Nlu.Tokens.First().StartsWith("да"))
                             {
                                 text = "Важным условием супрессивной терапии является безопасность. " +
                                     "Есть ли у вас сердцебиения, потливость, быстрая утомляемость, то имеет смысл снизить дозу на ";
-                                text += (User.BirthDate.CompareTo(DateTime.Now.AddYears(-70)) < 0 || User.Weight < 55) ? "12,5 мкг." :
+                                text += (User.DateOfBirth.CompareTo(DateTime.Now.AddYears(-70)) < 0 || User.Weight < 55) ? "12,5 мкг." :
                                     "25 мкг. ";
                                 text += "Затем следует проконтролировать ТТГ через 2 месяца";
                                 User.checkinterval = 60;
@@ -72,16 +72,16 @@ namespace HypothyroBot.Models.Session
                     {
                         if (User.TreatmentDose == 0)
                         {
-                            if (User.TSH < User.lowpthslev)
+                            if (User.Tests?.Last()?.TshLevel < User.lowTshLevel)
                             {
                                 text = "Есть риск что у вас тиреотоксикоз. Если вы ранее не сталкивались " +
                                     "с этим нужно сдать кровь на свободные фракции T3 и Т4 и антитела к " +
                                     "рецептору ТТГ и обратиться к эндокринологу.";
                             }
-                            else if (User.TSH > User.uppthslev)
+                            else if (User.Tests?.Last()?.TshLevel > User.upTshLevel)
                             {
                                 text = "Вероятно, ваша железа не справляется с обеспечением вас гормонами. ";
-                                if (User.TSH < 6)
+                                if (User.Tests?.Last()?.TshLevel < 6)
                                 {
                                     text += "Повышение ТТГ означает что щитовидная железа (то, что от нее осталось " +
                                         "после операции) вырабатывает меньше гормонов, чем нужно, однако разница " +
@@ -90,11 +90,11 @@ namespace HypothyroBot.Models.Session
                                     buttons = new List<ButtonModel>() { new ButtonModel("да", true), new ButtonModel("нет", true), };
                                     User.Mode = ModeType.Control;
                                 }
-                                else if (User.TSH > 6)
+                                else if (User.Tests?.Last()?.TshLevel > 6)
                                 {
                                     text += "У вас недостаток гормонов. Вам нужно начинать заместительную терапию. " +
                                         "Обычно эндокринологи начинают с дозы в 50 мкг левотироксина. Контроль ТТГ через ";
-                                    if (User.TSH > 10)
+                                    if (User.Tests?.Last()?.TshLevel > 10)
                                     {
                                         text += "1,5 месяца";
                                         User.checkinterval = 45;
@@ -115,7 +115,7 @@ namespace HypothyroBot.Models.Session
                         }
                         else if (User.TreatmentDose > 0)
                         {
-                            if (User.TSH < User.lowpthslev)
+                            if (User.Tests?.Last()?.TshLevel < User.lowTshLevel)
                             {
                                 text = "Мне кажется, что доза для Вас велика. Если мы наблюдаем снижение ТТГ, " +
                                     "то это значит, что гипофиз относится к уровню ваших гормонов как к избыточным.";
@@ -128,17 +128,17 @@ namespace HypothyroBot.Models.Session
                                 }
                                 User.Mode = ModeType.Control;
                             }
-                            else if (User.TSH > User.uppthslev)
+                            else if (User.Tests?.Last()?.TshLevel > User.upTshLevel)
                             {
-                                if (User.uppthslev > 6 && User.uppthslev < 10)
+                                if (User.Tests?.Last()?.TshLevel > 6 && User.Tests?.Last()?.TshLevel < 10)
                                 {
                                     text = "Вам нужно увеличить дозу на ";
-                                    text += (User.BirthDate.CompareTo(DateTime.Now.AddYears(-70)) < 0 || User.Weight < 55) ? "12,5 мкг." :
+                                    text += (User.DateOfBirth.CompareTo(DateTime.Now.AddYears(-70)) < 0 || User.Weight < 55) ? "12,5 мкг." :
                                         "25 мкг.";
                                     text += "Контроль ТТГ через 2 месяца.";
                                     User.checkinterval = 60;
                                 }
-                                else if (User.uppthslev > 10)
+                                else if (User.Tests?.Last()?.TshLevel > 10)
                                 {
                                     text = "У вас выраженный недостаток гормонов. Вам нужно срочно увеличить дозу " +
                                         "на 25 мкг. Контроль ТТГ через 1,5 месяца.";

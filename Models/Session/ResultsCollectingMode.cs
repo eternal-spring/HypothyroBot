@@ -14,14 +14,14 @@ namespace HypothyroBot.Models.Session
         {
             User = user;
         }
-        public async Task<AliceResponse> HandleRequest(AliceRequest aliceRequest, UsersDataBaseContext db)
+        public async Task<AliceResponse> HandleRequest(AliceRequest aliceRequest, ApplicationContext db)
         {
             string text = "";
             string tts = null;
             var buttons = new List<ButtonModel>();
             if (User.Mode != ModeType.ResultsCollecting)
             {            
-                if (User.TSH == 0)
+                if (User.Tests?.Last()?.TshLevel == 0)
                 {
                     text = "Скажите значение ТТГ (в мкМЕ/мл)";
                     User.Mode = ModeType.ResultsCollecting;
@@ -29,7 +29,7 @@ namespace HypothyroBot.Models.Session
             }
             else
             {
-                if (User.TSH == 0)
+                if (User.Tests?.Last()?.TshLevel == 0)
                 {
                     try
                     {
@@ -37,7 +37,7 @@ namespace HypothyroBot.Models.Session
                                    where (aliceRequest.Request.Nlu.Entities.Count() > 0
                                      && (w as NumberModel != null))
                                    select (w as NumberModel).Value).First();
-                        User.TSH = (double)tsh;
+                        User.Tests.Last().TshLevel = (double)tsh;
                     }
                     catch
                     {
@@ -45,7 +45,7 @@ namespace HypothyroBot.Models.Session
                     }
                     text = "Назовите дату сдачи анализа";
                 }
-                else if (User.TestDate == default)
+                else if (User.Tests?.Last()?.TestDate == default)
                 {
                     try
                     {
@@ -58,9 +58,9 @@ namespace HypothyroBot.Models.Session
                             {
                                 td.Year += 2000;
                             }
-                            User.TestDate = new DateTime((int)td.Year, (int)td.Month, (int)td.Day);
+                            User.Tests.Last().TestDate = new DateTime((int)td.Year, (int)td.Month, (int)td.Day);
                         }
-                        if (User.TestDate < User.OperationDate.AddDays(User.checkinterval))
+                        if (User.Tests?.Last()?.TestDate < User.DateOfOperation.AddDays(User.checkinterval))
                         {
                             text = $"Данный анализ не актуален. Прошло более {User.checkinterval} дней с момента сдачи. " +
                                 $"Рекомендуется повторить.";

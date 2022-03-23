@@ -14,7 +14,7 @@ namespace HypothyroBot.Models.Session
         {
             User = user;
         }
-        public async Task<AliceResponse> HandleRequest(AliceRequest aliceRequest, UsersDataBaseContext db)
+        public async Task<AliceResponse> HandleRequest(AliceRequest aliceRequest, ApplicationContext db)
         {
             string text = "";
             string tts = null;
@@ -43,7 +43,7 @@ namespace HypothyroBot.Models.Session
                 User.Name = aliceRequest.Request.OriginalUtterance.Trim();
                 text = "Скажите дату рождения";
             }
-            else if (User.BirthDate == default)
+            else if (User.DateOfBirth == default)
             {
                 try
                 {
@@ -56,9 +56,9 @@ namespace HypothyroBot.Models.Session
                         {
                             bd.Year += 2000;
                         }
-                        User.BirthDate = new DateTime((int)bd.Year, (int)bd.Month, (int)bd.Day);
+                        User.DateOfBirth = new DateTime((int)bd.Year, (int)bd.Month, (int)bd.Day);
                     }
-                    if ((int.Parse(DateTime.Now.ToString("yyyyMMdd")) - int.Parse(User.BirthDate.ToString("yyyyMMdd"))) / 10000 < 18)
+                    if ((int.Parse(DateTime.Now.ToString("yyyyMMdd")) - int.Parse(User.DateOfBirth.ToString("yyyyMMdd"))) / 10000 < 18)
                     {
                         return new AliceResponse(aliceRequest, text, true);
                     }
@@ -108,7 +108,7 @@ namespace HypothyroBot.Models.Session
                     return new AliceResponse(aliceRequest, "Не поняла, повторите");
                 }
                 if ((User.Gender == GenderType.Female || User.Gender == GenderType.Unknown) && 18 < 
-                    DateTime.Now.Subtract(User.BirthDate).TotalDays / 365.2425 && DateTime.Now.Subtract(User.BirthDate).TotalDays / 365.2425 < 45)
+                    DateTime.Now.Subtract(User.DateOfBirth).TotalDays / 365.2425 && DateTime.Now.Subtract(User.DateOfBirth).TotalDays / 365.2425 < 45)
                 {
                     buttons = new List<ButtonModel>() { new ButtonModel("да", true), new ButtonModel("нет", true), };
                     text = "Вы беременны?";
@@ -120,7 +120,7 @@ namespace HypothyroBot.Models.Session
                 }
             }
             else if ((User.Gender == GenderType.Female || User.Gender == GenderType.Unknown) && 18 < 
-                DateTime.Now.Subtract(User.BirthDate).TotalDays / 365.2425 && DateTime.Now.Subtract(User.BirthDate).TotalDays / 365.2425 < 45)
+                DateTime.Now.Subtract(User.DateOfBirth).TotalDays / 365.2425 && DateTime.Now.Subtract(User.DateOfBirth).TotalDays / 365.2425 < 45)
             {
                 if (aliceRequest.Request.Nlu.Tokens.First().StartsWith("да"))
                 {
@@ -198,7 +198,7 @@ namespace HypothyroBot.Models.Session
                 }
                 text = "Когда была операция?";
             }
-            else if (User.OperationDate == default)
+            else if (User.DateOfOperation == default)
             {
                 try
                 {
@@ -211,7 +211,7 @@ namespace HypothyroBot.Models.Session
                         {
                             od.Year += 2000;
                         }
-                        User.OperationDate = new DateTime((int)od.Year, (int)od.Month, (int)od.Day);
+                        User.DateOfOperation = new DateTime((int)od.Year, (int)od.Month, (int)od.Day);
                         buttons = new List<ButtonModel>() { new ButtonModel("Да", true), new ButtonModel("Половина", true),
                             new ButtonModel("Перешеек", true), new ButtonModel("Оставлен небольшой остаток доли",true), 
                             new ButtonModel("Затрудняюсь ответить",true) };
@@ -265,7 +265,7 @@ namespace HypothyroBot.Models.Session
             }
             else if (User.Pathology == PathologyType.None)
             {
-                var nng = new string[] { "аденома", "узловой", "нетокс" };
+                var nng = new string[] { "фолликулярная аденома", "узловой", "нетокс" };
                 var dtg = new string[] { "тиреоидит", "хашимото", "диффузный", "токс" };
                 var pfc = new string[] { "папиллярная", "фолликулярная карцинома" };
                 var mc = new string[] { "медуллярная" };
@@ -281,7 +281,7 @@ namespace HypothyroBot.Models.Session
                 else if (pfc.Any(aliceRequest.Request.Command.Contains))
                 {
                     User.Pathology = PathologyType.PapillaryOrFollicularCarcinoma;
-                    User.uppthslev = 2;
+                    User.upTshLevel = 2;
                 }
                 else if (mc.Any(aliceRequest.Request.Command.Contains))
                 {

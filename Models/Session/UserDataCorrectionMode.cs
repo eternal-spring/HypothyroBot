@@ -16,7 +16,7 @@ namespace HypothyroBot.Models.Session
         {
             User = user;
         }
-        public async Task<AliceResponse> HandleRequest(AliceRequest aliceRequest, UsersDataBaseContext db)
+        public async Task<AliceResponse> HandleRequest(AliceRequest aliceRequest, ApplicationContext db)
         {
             string text = "";
             var buttons = new List<ButtonModel>();
@@ -45,7 +45,7 @@ namespace HypothyroBot.Models.Session
                             User.Name = aliceRequest.Request.OriginalUtterance.Trim();
                             text = $"Теперь ваше имя - {User.Name}.";
                         }
-                        else if (User.BirthDate == default)
+                        else if (User.DateOfBirth == default)
                         {
                             try
                             {
@@ -58,13 +58,13 @@ namespace HypothyroBot.Models.Session
                                     {
                                         bd.Year += 2000;
                                     }
-                                    User.BirthDate = new DateTime((int)bd.Year, (int)bd.Month, (int)bd.Day);
+                                    User.DateOfBirth = new DateTime((int)bd.Year, (int)bd.Month, (int)bd.Day);
                                 }
-                                if ((int.Parse(DateTime.Now.ToString("yyyyMMdd")) - int.Parse(User.BirthDate.ToString("yyyyMMdd"))) / 10000 < 18)
+                                if ((int.Parse(DateTime.Now.ToString("yyyyMMdd")) - int.Parse(User.DateOfBirth.ToString("yyyyMMdd"))) / 10000 < 18)
                                 {
                                     return new AliceResponse(aliceRequest, text, true);
                                 }
-                                text = $"Теперь ваша дата рождения - {User.BirthDate}.";
+                                text = $"Теперь ваша дата рождения - {User.DateOfBirth}.";
                             }
                             catch
                             {
@@ -155,7 +155,7 @@ namespace HypothyroBot.Models.Session
                                 text += $"Препарат - { ((DescriptionAttribute)User.PretreatmentDrug.GetType().GetMember(User.PretreatmentDrug.ToString())[0].GetCustomAttributes(typeof(DescriptionAttribute), false)[0]).Description}. ";
                             }
                         }
-                        else if (User.OperationDate == default)
+                        else if (User.DateOfOperation == default)
                         {
                             try
                             {
@@ -168,13 +168,13 @@ namespace HypothyroBot.Models.Session
                                     {
                                         bd.Year += 2000;
                                     }
-                                    User.OperationDate = new DateTime((int)bd.Year, (int)bd.Month, (int)bd.Day);
+                                    User.DateOfOperation = new DateTime((int)bd.Year, (int)bd.Month, (int)bd.Day);
                                 }
-                                if ((int.Parse(DateTime.Now.ToString("yyyyMMdd")) - int.Parse(User.BirthDate.ToString("yyyyMMdd"))) / 10000 < 18)
+                                if ((int.Parse(DateTime.Now.ToString("yyyyMMdd")) - int.Parse(User.DateOfBirth.ToString("yyyyMMdd"))) / 10000 < 18)
                                 {
                                     return new AliceResponse(aliceRequest, text, true);
                                 }
-                                text = $"Теперь ваша дата операции - {User.OperationDate}.";
+                                text = $"Теперь ваша дата операции - {User.DateOfOperation}.";
                             }
                             catch
                             {
@@ -250,7 +250,7 @@ namespace HypothyroBot.Models.Session
                             else if (pfc.Any(aliceRequest.Request.Command.Contains))
                             {
                                 User.Pathology = PathologyType.PapillaryOrFollicularCarcinoma;
-                                User.uppthslev = 2;
+                                User.upTshLevel = 2;
                             }
                             else if (mc.Any(aliceRequest.Request.Command.Contains))
                             {
@@ -317,7 +317,6 @@ namespace HypothyroBot.Models.Session
                                 text += $"Препарат - { ((DescriptionAttribute)User.TreatmentDrug.GetType().GetMember(User.TreatmentDrug.ToString())[0].GetCustomAttributes(typeof(DescriptionAttribute), false)[0]).Description}. ";
                             }
                         }
-                        text += "Всё верно?";
                         buttons = new List<ButtonModel>() { new ButtonModel("Да", true), new ButtonModel("Нет", true) };
                         if (aliceRequest.Request.Command.Contains("имя"))
                         {
@@ -339,7 +338,7 @@ namespace HypothyroBot.Models.Session
                         else if (aliceRequest.Request.Command.Contains("дата рожд"))
                         {
                             text = "Назовите дату рождения";
-                            User.BirthDate = default;
+                            User.DateOfBirth = default;
                         }
                         else if (aliceRequest.Request.Command.Contains("терапия до опер"))
                         {
@@ -350,7 +349,7 @@ namespace HypothyroBot.Models.Session
                         else if (aliceRequest.Request.Command.Contains("дата опер"))
                         {
                             text = "Назовите дату операции";
-                            User.OperationDate = default;
+                            User.DateOfOperation = default;
                         }
                         else if (aliceRequest.Request.Command.Contains("щитовид"))
                         {
@@ -395,7 +394,6 @@ namespace HypothyroBot.Models.Session
                             SessionState = new SessionState() { Authorised = true, Id = User.Id, LastResponse = text, LastButtons = buttons },
                         };
                         return response;
-
                     }
             }
         }

@@ -20,11 +20,10 @@ namespace HypothyroBot
         public void ConfigureServices(IServiceCollection services)
         {
             string connectionString = Configuration.GetConnectionString("DataBaseContext");
-            services.AddDbContext<UsersDataBaseContext>(options
-                => { options.UseSqlServer(connectionString, sqlServerOptionsAction: sqlOptions => { sqlOptions.EnableRetryOnFailure(); }); });
+            services.AddDbContext<ApplicationContext>(options
+                => { options.UseLazyLoadingProxies().UseNpgsql(connectionString, npgsqlOptionsAction: sqlOptions => { sqlOptions.EnableRetryOnFailure(); }); });
             services.AddControllers().AddNewtonsoftJson();
             services.AddScoped<Response>();
-            //services.AddSingleton<AliceRequest>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

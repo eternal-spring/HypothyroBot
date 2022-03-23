@@ -14,11 +14,45 @@ namespace HypothyroBot.Models.Session
         {
             User = user;
         }
-        public async Task<AliceResponse> HandleRequest(AliceRequest aliceRequest, UsersDataBaseContext db)
+        public async Task<AliceResponse> HandleRequest(AliceRequest aliceRequest, ApplicationContext db)
         {
             string text = "";
             switch (User.Mode)
             {
+                case ModeType.RelevanceAssessment:
+                    {
+                        if (aliceRequest.Request.Command.Contains("да"))
+                        {
+                            if ((DateTime.Now - User.DateOfOperation).TotalDays >= 56)
+                            {
+                                User.Mode = ModeType.LimitationChecking;
+                                db.Users.Update(User);
+                                await db.SaveChangesAsync();
+                                return await new LimitationCheckingMode(User).HandleRequest(aliceRequest, db);
+                            }
+                            else
+                            {
+                                text = "Хотите ли вы получать напоминания о необходимости контролировать гормоны?";
+                                var buttons = new List<ButtonModel>() { new ButtonModel("Да", true), new ButtonModel("Нет", true) };
+                                User.Mode = ModeType.SetReminder;
+                                db.Users.Update(User);
+                                await db.SaveChangesAsync();
+                                var response = new AliceResponse(aliceRequest, text, buttons)
+                                {
+                                    SessionState = new SessionState() { Authorised = true, Id = User.Id, LastResponse = text, LastButtons = buttons },
+                                };
+                                return response;
+                            }
+                        }
+                        else if (aliceRequest.Request.Command.Contains("не"))
+                        {
+                            return await new UserDataCorrectionMode(User).HandleRequest(aliceRequest, db);
+                        }
+                        else
+                        {
+                            return new AliceResponse(aliceRequest, "Не поняла, повторите");
+                        }
+                    }
                 default:
                     {
                         if (User.ThyroidCondition == ThyroidType.CompletelyRemoved && User.TreatmentDose == 0)
@@ -34,14 +68,14 @@ namespace HypothyroBot.Models.Session
                         }
                         else
                         {
-                            text = $"Итак, вы {User.Name}, родились {User.BirthDate.ToString("D", CultureInfo.CreateSpecificCulture("ru-RU"))}, весите {User.Weight} кг, ";
+                            text = $"Итак, вы {User.Name}, родились {User.DateOfBirth.ToString("D", CultureInfo.CreateSpecificCulture("ru-RU"))}, весите {User.Weight} кг, ";
                             if (User.Gender != GenderType.None)
                             {
                                 text += $"{ ((DescriptionAttribute)User.Gender.GetType().GetMember(User.Gender.ToString())[0].GetCustomAttributes(typeof(DescriptionAttribute), false)[0]).Description}, ";
                             }
                             if (User.PretreatmentDose == 0)
                             {
-                                text += "до операции не принимали левотироксин";
+                                text += "до операции не принимали левотироксин, ";
                             }
                             else if (User.PretreatmentDose > 0)
                             {
@@ -55,7 +89,7 @@ namespace HypothyroBot.Models.Session
                                     text += $"{ ((DescriptionAttribute)User.PretreatmentDrug.GetType().GetMember(User.PretreatmentDrug.ToString())[0].GetCustomAttributes(typeof(DescriptionAttribute), false)[0]).Description}а, ";
                                 }
                             }
-                            text += $"дата операции: {User.OperationDate.ToString("D", CultureInfo.CreateSpecificCulture("ru-RU"))}, ";
+                            text += $"дата операции: {User.DateOfOperation.ToString("D", CultureInfo.CreateSpecificCulture("ru-RU"))}, ";
                             if (User.ThyroidCondition == ThyroidType.CompletelyRemoved)
                             {
                                 text += "щитовидка была удалена вся, ";
@@ -99,40 +133,6 @@ namespace HypothyroBot.Models.Session
                             db.Users.Update(User);
                             await db.SaveChangesAsync();
                             return new AliceResponse(aliceRequest, text, buttons);
-                        }
-                    }
-                case ModeType.RelevanceAssessment:
-                    {
-                        if (aliceRequest.Request.Command.Contains("да"))
-                        {
-                            if ((DateTime.Now - User.OperationDate).TotalDays >= 56)
-                            {
-                                User.Mode = ModeType.LimitationChecking;
-                                db.Users.Update(User);
-                                await db.SaveChangesAsync();
-                                return await new LimitationCheckingMode(User).HandleRequest(aliceRequest, db);
-                            }
-                            else
-                            {
-                                text = "Хотите ли вы получать напоминания о необходимости контролировать гормоны?";
-                                var buttons = new List<ButtonModel>() { new ButtonModel("Да", true), new ButtonModel("Нет", true) };
-                                User.Mode = ModeType.SetReminder;
-                                db.Users.Update(User);
-                                await db.SaveChangesAsync();
-                                var response = new AliceResponse(aliceRequest, text, buttons)
-                                {
-                                    SessionState = new SessionState() { Authorised = true, Id = User.Id, LastResponse = text, LastButtons = buttons },
-                                };
-                                return response;
-                            }
-                        }
-                        else if (aliceRequest.Request.Command.Contains("не"))
-                        {
-                            return await new UserDataCorrectionMode(User).HandleRequest(aliceRequest, db);
-                        }
-                        else
-                        {
-                            return new AliceResponse(aliceRequest, "Не поняла, повторите");
                         }
                     }
             }

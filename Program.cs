@@ -18,7 +18,7 @@ namespace HypothyroBot
 
                 try
                 {
-                    var context = services.GetRequiredService<UsersDataBaseContext>();
+                    var context = services.GetRequiredService<ApplicationContext>();
                 }
                 catch (Exception ex)
                 {
