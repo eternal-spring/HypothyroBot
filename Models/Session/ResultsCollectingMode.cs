@@ -20,21 +20,22 @@ namespace HypothyroBot.Models.Session
             string tts = null;
             var buttons = new List<ButtonModel>();
             if (User.Mode != ModeType.ResultsCollecting)
-            {            
-                if (User.Tests?.Last()?.TshLevel == 0)
-                {
-                    text = "Скажите значение ТТГ (в мкМЕ/мл)";
-                    User.Mode = ModeType.ResultsCollecting;
-                }
+            {
+                User.Tests?.Add(new Test {TshLevel = -2, Id = (User.Tests?.Count + 1).ToString() });
+                //if (User.Tests?.Last()?.TshLevel == 0)
+                //{
+                text = "Скажите значение ТТГ (в мкМЕ/мл)";
+                User.Mode = ModeType.ResultsCollecting;
+                //}
             }
             else
             {
-                if (User.Tests?.Last()?.TshLevel == 0)
+                if (User.Tests?.Last()?.TshLevel == -2)
                 {
                     try
                     {
                         var tsh = (from w in aliceRequest.Request.Nlu.Entities
-                                   where (aliceRequest.Request.Nlu.Entities.Count() > 0
+                                   where (aliceRequest.Request.Nlu.Entities.Any()
                                      && (w as NumberModel != null))
                                    select (w as NumberModel).Value).First();
                         User.Tests.Last().TshLevel = (double)tsh;
@@ -45,12 +46,12 @@ namespace HypothyroBot.Models.Session
                     }
                     text = "Назовите дату сдачи анализа";
                 }
-                else if (User.Tests?.Last()?.TestDate == default)
+                else if (User.Tests?.Last().TestDate == default(DateTime))
                 {
                     try
                     {
                         var td = (from date in aliceRequest.Request.Nlu.Entities
-                                  where (aliceRequest.Request.Nlu.Entities.Count() > 0 && date as DateTimeModel != null)
+                                  where (aliceRequest.Request.Nlu.Entities.Any() && date as DateTimeModel != null)
                                   select (date as DateTimeModel).Value).First();
                         if (td != null)
                         {
@@ -60,7 +61,7 @@ namespace HypothyroBot.Models.Session
                             }
                             User.Tests.Last().TestDate = new DateTime((int)td.Year, (int)td.Month, (int)td.Day);
                         }
-                        if (User.Tests?.Last()?.TestDate < User.DateOfOperation.AddDays(User.checkinterval))
+                        if (User.Tests?.Last()?.TestDate > User.DateOfOperation.AddDays(User.checkinterval))
                         {
                             text = $"Данный анализ не актуален. Прошло более {User.checkinterval} дней с момента сдачи. " +
                                 $"Рекомендуется повторить.";

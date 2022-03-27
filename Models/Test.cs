@@ -15,5 +15,9 @@ namespace HypothyroBot.Models
         [Column(TypeName = "date")]
         public DateTime TestDate { get; set; }
         public virtual User User { get; set; }
+        public Test()
+        {
+            ;
+        }
     }
 }

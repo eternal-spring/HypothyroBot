@@ -50,11 +50,15 @@ namespace HypothyroBot.Models.Session
                 }
                 else if (aliceRequest.Request.Command.Contains("когда"))
                 {
-                    text = $"Вам нужно сдать анализы не позднее, чем {User.DateOfOperation.AddDays(User.checkinterval):D}";
+                    text = $"Вам нужно сдать анализы не позднее, чем ";
+                    if (User.Tests?.Count == 0)
+                        text += $"{User.DateOfOperation.AddDays(User.checkinterval):D}";
+                    else
+                        text += $"{User.Tests.Last().TestDate.AddDays(User.checkinterval):D}";
                 }
                 else if (aliceRequest.Request.Command.Contains("прошл"))
                 {
-                    if (User.Tests?.Count != 0)
+                    if (User.Tests.Any())
                     {
                         text = $"Ваш последний анализ {User.Tests?.Last()?.TshLevel} мкМЕ/мл ";
                         text += $"Дата сдачи: {User.Tests?.Last()?.TestDate:D}";

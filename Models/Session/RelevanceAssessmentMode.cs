@@ -16,7 +16,7 @@ namespace HypothyroBot.Models.Session
         }
         public async Task<AliceResponse> HandleRequest(AliceRequest aliceRequest, ApplicationContext db)
         {
-            string text = "";
+            string text;
             switch (User.Mode)
             {
                 case ModeType.RelevanceAssessment:

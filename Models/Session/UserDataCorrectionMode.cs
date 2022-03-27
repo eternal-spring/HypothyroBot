@@ -11,7 +11,7 @@ namespace HypothyroBot.Models.Session
 {
     public class UserDataCorrectionMode : IMode
     {
-        private User User;
+        private readonly User User;
         public UserDataCorrectionMode(User user)
         {
             User = user;
@@ -105,7 +105,7 @@ namespace HypothyroBot.Models.Session
                             try
                             {
                                 var weight = (from w in aliceRequest.Request.Nlu.Entities
-                                              where (aliceRequest.Request.Nlu.Entities.Count() > 0
+                                              where (aliceRequest.Request.Nlu.Entities.Any()
                                                 && (w as NumberModel != null))
                                               select (w as NumberModel).Value).First();
                                 User.Weight = (double)weight;

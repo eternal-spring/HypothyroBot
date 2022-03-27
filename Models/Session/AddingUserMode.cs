@@ -98,8 +98,8 @@ namespace HypothyroBot.Models.Session
                 try
                 {
                     var weight = (from w in aliceRequest.Request.Nlu.Entities
-                                  where (aliceRequest.Request.Nlu.Entities.Count() > 0
-                                    && (w as NumberModel != null))
+                                  where aliceRequest.Request.Nlu.Entities.Any()
+                                    && (w as NumberModel != null)
                                   select (w as NumberModel).Value).First();
                     User.Weight = (double)weight;
                 }
