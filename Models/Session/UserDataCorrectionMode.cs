@@ -43,7 +43,7 @@ namespace HypothyroBot.Models.Session
                         if (User.Name == null)
                         {
                             User.Name = aliceRequest.Request.OriginalUtterance.Trim();
-                            text = $"Теперь ваше имя - {User.Name}.";
+                            text = $"Ваше имя - {User.Name}.";
                         }
                         else if (User.DateOfBirth == default)
                         {
@@ -64,7 +64,7 @@ namespace HypothyroBot.Models.Session
                                 {
                                     return new AliceResponse(aliceRequest, text, true);
                                 }
-                                text = $"Теперь ваша дата рождения - {User.DateOfBirth}.";
+                                text = $"Ваша дата рождения - {User.DateOfBirth}.";
                             }
                             catch
                             {
@@ -91,7 +91,14 @@ namespace HypothyroBot.Models.Session
                                 new ButtonModel("отказываюсь отвечать", true) };
                                 return new AliceResponse(aliceRequest, "Не поняла, повторите", buttons);
                             }
-                            text = $"Теперь ваш пол - { ((DescriptionAttribute)User.Gender.GetType().GetMember(User.Gender.ToString())[0].GetCustomAttributes(typeof(DescriptionAttribute), false)[0]).Description}. ";
+                            if (!(User.Gender == GenderType.Unknown))
+                            {
+                                text = $"Ваш пол - { ((DescriptionAttribute)User.Gender.GetType().GetMember(User.Gender.ToString())[0].GetCustomAttributes(typeof(DescriptionAttribute), false)[0]).Description}. ";
+                            }
+                            else
+                            {
+                                text = "Вы отказались называть свой пол";
+                            }
                         }
                         else if (User.Weight == 0)
                         {
@@ -107,7 +114,7 @@ namespace HypothyroBot.Models.Session
                             {
                                 return new AliceResponse(aliceRequest, "Не поняла, повторите");
                             }
-                            text = $"Теперь ваш вес - {User.Weight}.";
+                            text = $"Ваш вес - {User.Weight}.";
                         }
                         else if (User.PretreatmentDose == -2)
                         {
@@ -115,7 +122,7 @@ namespace HypothyroBot.Models.Session
                             {
                                 var dose = (from d in aliceRequest.Request.Nlu.Entities where (d as NumberModel != null) select (d as NumberModel).Value).First();
                                 User.PretreatmentDose = (double)dose;
-                                text = "Теперь вы не принимали тироксин до операции.";
+                                text = "Вы не принимали тироксин до операции.";
                                 if (User.PretreatmentDose > 0)
                                 {
                                     buttons = new List<ButtonModel>() { new ButtonModel("эутирокс", true), new ButtonModel("L-тироксин", true),
@@ -149,7 +156,7 @@ namespace HypothyroBot.Models.Session
                                                                                                                 new ButtonModel("другой", true) };
                                 return new AliceResponse(aliceRequest, "Не поняла, повторите", buttons);
                             }
-                            text = $"Теперь вы принимали {User.PretreatmentDose} мкг левотироксина. ";
+                            text = $"Вы принимали {User.PretreatmentDose} мкг левотироксина до операции. ";
                             if (User.PretreatmentDrug != DrugType.Another)
                             {
                                 text += $"Препарат - { ((DescriptionAttribute)User.PretreatmentDrug.GetType().GetMember(User.PretreatmentDrug.ToString())[0].GetCustomAttributes(typeof(DescriptionAttribute), false)[0]).Description}. ";
@@ -174,7 +181,7 @@ namespace HypothyroBot.Models.Session
                                 {
                                     return new AliceResponse(aliceRequest, text, true);
                                 }
-                                text = $"Теперь ваша дата операции - {User.DateOfOperation}.";
+                                text = $"Дата вашей операции - {User.DateOfOperation}.";
                             }
                             catch
                             {
@@ -217,19 +224,19 @@ namespace HypothyroBot.Models.Session
                             }
                             if (User.ThyroidCondition == ThyroidType.CompletelyRemoved)
                             {
-                                text += "У вас щитовидка была удалена вся. ";
+                                text += "Щитовидка была удалена вся. ";
                             }
                             else if (User.ThyroidCondition == ThyroidType.HalfRemoved)
                             {
-                                text += "У вас щитовидка была удалена наполовину. ";
+                                text += "Щитовидка была удалена наполовину. ";
                             }
                             else if (User.ThyroidCondition == ThyroidType.IsthmusRemoved)
                             {
-                                text += "У вас был удалён перешеек щитовидки. ";
+                                text += "Был удалён перешеек щитовидки. ";
                             }
                             else if (User.ThyroidCondition == ThyroidType.LobeRemainderLeft)
                             {
-                                text += "У вас оставлен небольшой остаток доли щитовидки. ";
+                                text += "Был оставлен небольшой остаток доли щитовидки. ";
                             }
                         }
                         else if (User.Pathology == PathologyType.None)
@@ -277,7 +284,7 @@ namespace HypothyroBot.Models.Session
                             {
                                 var dose = (from d in aliceRequest.Request.Nlu.Entities where (d as NumberModel != null) select (d as NumberModel).Value).First();
                                 User.TreatmentDose = (double)dose;
-                                text = "Теперь вам не был назначен тироксин после операции.";
+                                text = "Вам не был назначен тироксин после операции.";
                                 if (User.TreatmentDose > 0)
                                 {
                                     buttons = new List<ButtonModel>() { new ButtonModel("эутирокс", true), new ButtonModel("L-тироксин", true),
@@ -311,7 +318,7 @@ namespace HypothyroBot.Models.Session
                                                                                                                 new ButtonModel("другой", true) };
                                 return new AliceResponse(aliceRequest, "Не поняла, повторите", buttons);
                             }
-                            text = $"Теперь вы принимаете {User.TreatmentDose} мкг левотироксина после операции.";
+                            text = $"Вам назначено {User.TreatmentDose} мкг левотироксина после операции.";
                             if (User.TreatmentDrug != DrugType.Another)
                             {
                                 text += $"Препарат - { ((DescriptionAttribute)User.TreatmentDrug.GetType().GetMember(User.TreatmentDrug.ToString())[0].GetCustomAttributes(typeof(DescriptionAttribute), false)[0]).Description}. ";
@@ -371,8 +378,8 @@ namespace HypothyroBot.Models.Session
                         else if (aliceRequest.Request.Command.Contains("терапия после опер"))
                         {
                             text = "Скажите, сколько мкг тироксина вы принимали до операции?";
-                            User.PretreatmentDose = -2;
-                            User.PretreatmentDrug = DrugType.None;
+                            User.TreatmentDose = -2;
+                            User.TreatmentDrug = DrugType.None;
                         }
                         else if (aliceRequest.Request.Command.Contains("да"))
                         {

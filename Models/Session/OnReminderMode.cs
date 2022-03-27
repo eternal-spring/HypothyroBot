@@ -54,20 +54,27 @@ namespace HypothyroBot.Models.Session
                 }
                 else if (aliceRequest.Request.Command.Contains("прошл"))
                 {
-                    text = $"Ваш последний анализ {User.Tests?.Last()?.TshLevel} мкМЕ/мл ";
-                    text += $"Дата сдачи: {User.Tests?.Last()?.TestDate:D}";
-                    text += $"Хотите узнать более ранние ТТГ?";
-                    return new AliceResponse(aliceRequest, text, tts, new List<ButtonModel>() { new ButtonModel("да", true), new ButtonModel("нет", true)})
+                    if (User.Tests?.Count != 0)
                     {
-                        SessionState = new SessionState() { Authorised = true, Id = User.Id, LastResponse = text },
-                    };
+                        text = $"Ваш последний анализ {User.Tests?.Last()?.TshLevel} мкМЕ/мл ";
+                        text += $"Дата сдачи: {User.Tests?.Last()?.TestDate:D}";
+                        text += $"Хотите узнать более ранние ТТГ?";
+                        return new AliceResponse(aliceRequest, text, tts, new List<ButtonModel>() { new ButtonModel("да", true), new ButtonModel("нет", true) })
+                        {
+                            SessionState = new SessionState() { Authorised = true, Id = User.Id, LastResponse = text },
+                        };
+                    }
+                    else
+                    {
+                        text = "Вы ещё не сдавали ТТГ";
+                    }
                 }
                 else if (aliceRequest.Request.Command.Contains("да"))
                 {
                     text = $"Ваши ТТГ: ";
                     foreach (var test in User.Tests)
                     {
-                        text += $"{User.Tests?.Last()?.TestDate:D} - {User.Tests?.Last()?.TshLevel} мкМЕ/мл, ";
+                        text += $"{test.TestDate:D} - {test.TshLevel} мкМЕ/мл, ";
                     }
                     text += "Вы всегда можете сообщить мне об изменениях в самочувствии, терапии, данных анализов.";
                 }

@@ -13,6 +13,7 @@ namespace HypothyroBot.Models
         PapillaryOrFollicularCarcinoma,
         [Description("медуллярная карцинома")]
         MedullaryCarcinoma,
+        [Description("другое")]
         Another
     }
 }
