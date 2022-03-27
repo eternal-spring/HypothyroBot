@@ -18,6 +18,10 @@ namespace HypothyroBot.Models.Session
         {
             string text = "";
             string tts = "";
+            if (User.TreatmentDose == -2 || (User.TreatmentDose > 0 && User.TreatmentDrug == DrugType.None))
+            {
+                return await new UserDataCorrectionMode(User).HandleRequest(aliceRequest, db);
+            }
             if (aliceRequest.Session.New)
             {
                 if ((DateTime.Now - User.DateOfOperation).TotalDays >= 28)
@@ -86,13 +90,13 @@ namespace HypothyroBot.Models.Session
                 {
                     text = "Вы всегда можете сообщить мне об изменениях в самочувствии, терапии, данных анализов.";
                 }
-                //else if (aliceRequest.Request.Command.Contains("другая доза"))
-                //{
-
-                //}
+                else if (aliceRequest.Request.Command.Contains("другая доза"))
+                {
+                    return await new UserDataCorrectionMode(User).HandleRequest(aliceRequest, db);
+                }
             }
             var buttons = new List<ButtonModel>() { new ButtonModel("Я сдал анализы", true), new ButtonModel("Когда мне сдавать анализы?", true),
-                        new ButtonModel("Мои прошлые ТТГ?", true), /*new ButtonModel("У меня другая доза лекарства", true) */};
+                        new ButtonModel("Мои прошлые ТТГ?", true), new ButtonModel("У меня другая доза лекарства", true) };
             var response = new AliceResponse(aliceRequest, text, tts, buttons)
             {
                 SessionState = new SessionState() {Authorised = true, Id = User.Id, LastResponse = text },

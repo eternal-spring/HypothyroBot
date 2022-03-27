@@ -47,7 +47,6 @@ namespace HypothyroBot.Models.Session
             var response = new AliceResponse(aliceRequest, text, tts, buttons)
             {
                 SessionState = new SessionState() {Authorised = true, LastResponse = text },
-                //UserStateUpdate = user,
             };
             return response;
         }

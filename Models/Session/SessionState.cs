@@ -1,13 +1,11 @@
-﻿namespace HypothyroBot.Models.Session
-{
-    using HypothyroBot.Models.Alice_API;
-    using Newtonsoft.Json;
-    using System.Collections.Generic;
+﻿using HypothyroBot.Models.Alice_API;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 
+namespace HypothyroBot.Models.Session
+{
     public class SessionState
     {
-        //[JsonProperty("mode")]
-        //public ModeType Mode { get; set; }
         [JsonProperty("is_authorised")]
         public bool Authorised { get; set; } = false;
         [JsonProperty("id")]
@@ -18,11 +16,11 @@
         public List<ButtonModel> LastButtons { get; set; }
         public SessionState(string lastQuestion)
         {
-            //Mode = mode;
             LastResponse = lastQuestion;
         }
         public SessionState()
         {
+
         }
     }
 }

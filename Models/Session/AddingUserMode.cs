@@ -19,14 +19,11 @@ namespace HypothyroBot.Models.Session
             string text = "";
             string tts = null;
             var buttons = new List<ButtonModel>();
-            //User user = aliceRequest.State?.User;
-            //User user = DataBaseContext.Me.Users.FirstOrDefault(u => u.Id == aliceRequest.Session.UserId);
             if (User?.Id == null)
             {
                 User = new User
                 {
                     Id = aliceRequest.Session.UserId,
-                    //Mode = ModeType.AddingUser,
                 };
                 db.Users.Add(User);
                 await db.SaveChangesAsync();
@@ -128,7 +125,6 @@ namespace HypothyroBot.Models.Session
                     return new AliceResponse(aliceRequest, text, true)
                     {
                         SessionState = new SessionState() {Authorised = true, Id = User.Id, LastResponse = text },
-                        //UserStateUpdate = User,
                     };
                 }
                 if (aliceRequest.Request.Nlu.Tokens.First().StartsWith("не"))
@@ -369,13 +365,6 @@ namespace HypothyroBot.Models.Session
                                                                                                                 new ButtonModel("другой", true) };
                     return new AliceResponse(aliceRequest, "Не поняла, повторите", buttons);
                 }
-                //if ((DateTime.Now - User.OperationDate).TotalDays >= 56)
-                //{
-                //    User.Mode = ModeType.LimitationChecking;
-                //    db.Users.Update(User);
-                //    await db.SaveChangesAsync();
-                //    return await new LimitationCheckingMode(User).HandleRequest(aliceRequest, db);
-                //}
                 db.Users.Update(User);
                 await db.SaveChangesAsync();
                 return await new RelevanceAssessmentMode(User).HandleRequest(aliceRequest, db);
@@ -395,7 +384,6 @@ namespace HypothyroBot.Models.Session
                     {
                         db.Users.Update(User);
                         await db.SaveChangesAsync();
-                        //aliceRequest.State.Session.Mode = ModeType.RelevanceAssessment;
                         return await new RelevanceAssessmentMode(User).HandleRequest(aliceRequest, db);
                     }
                 }
@@ -440,13 +428,6 @@ namespace HypothyroBot.Models.Session
                         return new AliceResponse(aliceRequest, "Не поняла, повторите");
                     }
                 }
-                //if ((DateTime.Now - User.OperationDate).TotalDays >= 56)
-                //{
-                //    User.Mode = ModeType.LimitationChecking;
-                //    db.Users.Update(User);
-                //    await db.SaveChangesAsync();
-                //    return await new LimitationCheckingMode(User).HandleRequest(aliceRequest, db);
-                //}
                 db.Users.Update(User);
                 await db.SaveChangesAsync();
                 return await new RelevanceAssessmentMode(User).HandleRequest(aliceRequest, db);
@@ -456,7 +437,6 @@ namespace HypothyroBot.Models.Session
             var response = new AliceResponse(aliceRequest, text, buttons)
             {
                 SessionState = new SessionState() { Authorised = true, Id = User.Id, LastResponse = text, LastButtons = buttons },
-                //UserStateUpdate = User,
             };
             return response;
         }

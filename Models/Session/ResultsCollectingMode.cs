@@ -22,11 +22,8 @@ namespace HypothyroBot.Models.Session
             if (User.Mode != ModeType.ResultsCollecting)
             {
                 User.Tests?.Add(new Test {TshLevel = -2, Id = (User.Tests?.Count + 1).ToString() });
-                //if (User.Tests?.Last()?.TshLevel == 0)
-                //{
                 text = "Скажите значение ТТГ (в мкМЕ/мл)";
                 User.Mode = ModeType.ResultsCollecting;
-                //}
             }
             else
             {
@@ -84,7 +81,6 @@ namespace HypothyroBot.Models.Session
             var response = new AliceResponse(aliceRequest, text, tts, buttons)
             {
                 SessionState = new SessionState() { Authorised = true, LastResponse = text },
-                //UserStateUpdate = user,
             };
             return response;
         }

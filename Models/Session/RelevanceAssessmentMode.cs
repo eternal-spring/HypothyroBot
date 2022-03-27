@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Threading.Tasks;
+
 namespace HypothyroBot.Models.Session
 {
     public class RelevanceAssessmentMode : IMode

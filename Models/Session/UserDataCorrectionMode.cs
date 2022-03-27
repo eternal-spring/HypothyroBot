@@ -4,14 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace HypothyroBot.Models.Session
 {
     public class UserDataCorrectionMode : IMode
     {
-        private readonly User User;
+        private User User;
         public UserDataCorrectionMode(User user)
         {
             User = user;
@@ -22,6 +21,72 @@ namespace HypothyroBot.Models.Session
             var buttons = new List<ButtonModel>();
             switch (User.Mode)
             {
+                case ModeType.OnReminder:
+                    {
+                        if (User.TreatmentDose == -2)
+                        {
+                            try
+                            {
+                                var dose = (from d in aliceRequest.Request.Nlu.Entities where (d as NumberModel != null) select (d as NumberModel).Value).First();
+                                User.TreatmentDose = (double)dose;
+                                text = "Теперь вы не принимаете тироксин.";
+                                buttons = new List<ButtonModel>() { new ButtonModel("Я сдал анализы", true), new ButtonModel("Когда мне сдавать анализы?", true),
+                                    new ButtonModel("Мои прошлые ТТГ?", true), new ButtonModel("У меня другая доза лекарства", true) };
+                                if (User.TreatmentDose > 0)
+                                {
+                                    buttons = new List<ButtonModel>() { new ButtonModel("эутирокс", true), new ButtonModel("L-тироксин", true),
+                                                                                                                new ButtonModel("другой", true) };
+                                    text = "Какой препарат?";
+                                }
+                            }
+                            catch
+                            {
+                                return new AliceResponse(aliceRequest, "Скажите, сколько мкг тироксина вы принимаете?");
+                            }
+                        }
+                        else if (User.TreatmentDose > 0 && User.TreatmentDrug == DrugType.None)
+                        {
+                            var lt = new string[] { "l-тироксин", "элтироксин", "эл тироксин", "l тироксин" };
+                            if (aliceRequest.Request.Command.Contains("эутирокс"))
+                            {
+                                User.TreatmentDrug = DrugType.Eutirox;
+                            }
+                            else if (lt.Any(aliceRequest.Request.Command.Contains))
+                            {
+                                User.TreatmentDrug = DrugType.LThyroxine;
+                            }
+                            else if (aliceRequest.Request.Command.Contains("друг"))
+                            {
+                                User.TreatmentDrug = DrugType.Another;
+                            }
+                            else
+                            {
+                                buttons = new List<ButtonModel>() { new ButtonModel("эутирокс", true), new ButtonModel("L-тироксин", true),
+                                                                                                                new ButtonModel("другой", true) };
+                                return new AliceResponse(aliceRequest, "Не поняла, повторите", buttons);
+                            }
+                            text = $"Теперь вы принимаете {User.TreatmentDose} мкг левотироксина.";
+                            if (User.TreatmentDrug != DrugType.Another)
+                            {
+                                text += $"Препарат - { ((DescriptionAttribute)User.TreatmentDrug.GetType().GetMember(User.TreatmentDrug.ToString())[0].GetCustomAttributes(typeof(DescriptionAttribute), false)[0]).Description}. ";
+                            }
+                            buttons = new List<ButtonModel>() { new ButtonModel("Я сдал анализы", true), new ButtonModel("Когда мне сдавать анализы?", true),
+                                    new ButtonModel("Мои прошлые ТТГ?", true), new ButtonModel("У меня другая доза лекарства", true) };
+                        }
+                        else
+                        {
+                            User.TreatmentDose = -2;
+                            User.TreatmentDrug = DrugType.None;
+                            text = "Скажите, сколько мкг тироксина вы принимаете?";
+                        }
+                        db.Users.Update(User);
+                        await db.SaveChangesAsync();
+                        var response = new AliceResponse(aliceRequest, text, buttons)
+                        {
+                            SessionState = new SessionState() { Authorised = true, Id = User.Id, LastResponse = text },
+                        };
+                        return response;
+                    }
                 case ModeType.RelevanceAssessment:
                     {
                         text = "Скажите, что нужно исправить?";
@@ -218,8 +283,8 @@ namespace HypothyroBot.Models.Session
                             else
                             {
                                 var b = new List<ButtonModel>() { new ButtonModel("Да", true), new ButtonModel("Половина", true),
-                        new ButtonModel("Перешеек", true), new ButtonModel("Оставлен небольшой остаток доли",true),
-                        new ButtonModel("Затрудняюсь ответить",true) };
+                                new ButtonModel("Перешеек", true), new ButtonModel("Оставлен небольшой остаток доли",true),
+                                new ButtonModel("Затрудняюсь ответить",true) };
                                 return new AliceResponse(aliceRequest, "Не поняла, повторите", b);
                             }
                             if (User.ThyroidCondition == ThyroidType.CompletelyRemoved)
@@ -377,7 +442,7 @@ namespace HypothyroBot.Models.Session
                         }
                         else if (aliceRequest.Request.Command.Contains("терапия после опер"))
                         {
-                            text = "Скажите, сколько мкг тироксина вы принимали до операции?";
+                            text = "Скажите, сколько мкг тироксина вы принимаете после операции?";
                             User.TreatmentDose = -2;
                             User.TreatmentDrug = DrugType.None;
                         }
@@ -395,7 +460,7 @@ namespace HypothyroBot.Models.Session
                             return await new UserDataCorrectionMode(User).HandleRequest(aliceRequest, db);
                         }
                         db.Users.Update(User);
-                        await db.SaveChangesAsync(); 
+                        await db.SaveChangesAsync();
                         var response = new AliceResponse(aliceRequest, text, buttons)
                         {
                             SessionState = new SessionState() { Authorised = true, Id = User.Id, LastResponse = text, LastButtons = buttons },
