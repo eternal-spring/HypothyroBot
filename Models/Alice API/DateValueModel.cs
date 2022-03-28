@@ -1,7 +1,7 @@
-﻿namespace HypothyroBot.Models.Alice_API
-{
-    using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
+namespace HypothyroBot.Models.Alice_API
+{
     public class DateValueModel
     {
         [JsonProperty("day")]
@@ -10,7 +10,6 @@
         public bool DayIsRelative { get; set; }
         [JsonProperty("month")]
         public double Month { get; set; }
-
         [JsonProperty("year")]
         public double Year { get; set; }
     }

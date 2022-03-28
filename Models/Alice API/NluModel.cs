@@ -12,7 +12,6 @@ namespace HypothyroBot.Models.Alice_API
         [JsonProperty("entities")]
         [JsonConverter(typeof(EntitiesConverter))]
         public IEnumerable<EntityModel> Entities { get; set; }
-
     }
 
     internal class EntitiesConverter : JsonConverter<IEnumerable<EntityModel>>
@@ -32,7 +31,6 @@ namespace HypothyroBot.Models.Alice_API
                     }
                     else if (ent["type"].Value<string>() == "YANDEX.NUMBER")
                     {
-                        //return JsonConvert.DeserializeObject<NumberModel>((string)jo);
                         list.Add(ent.ToObject<NumberModel>(serializer));
                     }
                 }

@@ -8,11 +8,8 @@ namespace HypothyroBot.Models.Alice_API
     {
         [JsonProperty("response")]
         public ResponseModel Response { get; set; }
-
         [JsonProperty("user_state_update")]
         public SessionState SessionState { get; set; }
-        //[JsonProperty("user_state_update")]
-        //public User UserStateUpdate { get; set; }
         [JsonProperty("version")]
         public string Version { get; set; } = "1.0";
         public AliceResponse() 
@@ -31,7 +28,6 @@ namespace HypothyroBot.Models.Alice_API
             if (aliceRequest.State != null)
             {
                 SessionState = aliceRequest.State.Session;
-                //UserStateUpdate = aliceRequest.State.User;
             }
         }
         public AliceResponse(AliceRequest aliceRequest, string text, string tts, List<ButtonModel> buttons) : this(aliceRequest, text, tts, false, buttons)

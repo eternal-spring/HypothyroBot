@@ -6,7 +6,6 @@ namespace HypothyroBot.Models.Alice_API
     {
         [JsonProperty("tokens")]
         public object Tokens { get; set; }
-
         [JsonProperty("type")]
         public string Type { get; set; }
     }

@@ -1,6 +1,7 @@
-﻿namespace HypothyroBot.Models.Alice_API
+﻿using Newtonsoft.Json;
+
+namespace HypothyroBot.Models.Alice_API
 {
-    using Newtonsoft.Json;
     public class AliceRequest
     {
         [JsonProperty("meta")]

@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+
 namespace HypothyroBot.Models.Alice_API
 {
     public class ApplicationModel

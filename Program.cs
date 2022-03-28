@@ -15,7 +15,6 @@ namespace HypothyroBot
             using (var scope = host.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
-
                 try
                 {
                     var context = services.GetRequiredService<ApplicationContext>();

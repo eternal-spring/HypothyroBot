@@ -20,6 +20,5 @@ namespace HypothyroBot.Models.Alice_API
         public string UserId { get; set; }
         [JsonProperty("application")]
         public ApplicationModel Application { get; set; }
-
     }
 }

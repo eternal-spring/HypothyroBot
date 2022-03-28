@@ -1,7 +1,5 @@
 ﻿using HypothyroBot.Models.Alice_API;
 using HypothyroBot.Models.Session;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace HypothyroBot.Models

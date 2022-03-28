@@ -7,8 +7,5 @@ namespace HypothyroBot.Models.Alice_API
     {
         [JsonProperty("user")]
         public SessionState Session { get; set; }
-
-        //[JsonProperty("user")]
-        //public UserState User { get; set; }
     }
 }

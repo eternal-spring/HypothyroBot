@@ -6,16 +6,10 @@ namespace HypothyroBot.Models.Alice_API
     {
         [JsonProperty("command")]
         public string Command { get; set; }
-
         [JsonProperty("original_utterance")]
         public string OriginalUtterance { get; set; }
-
-        //[JsonProperty("payload")]
-        //public object Payload { get; set; }
-
         [JsonProperty("markup")]
         public MarkupModel Markup { get; set; }
-
         [JsonProperty("type")]
         public RequestType Type { get; set; }
         [JsonProperty("nlu")]
@@ -26,5 +20,4 @@ namespace HypothyroBot.Models.Alice_API
         SimpleUtterance,
         ButtonPressed
     }
-
 }

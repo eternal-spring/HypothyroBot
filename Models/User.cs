@@ -9,25 +9,19 @@ namespace HypothyroBot.Models
     {
         [Key]
         public string Id { get; set; }
-        //[Column(TypeName = "nvarchar(24)")]
         public ModeType Mode { get; set; }
         public string Name { get; set; }
         [Column(TypeName = "date")]
         public DateTime DateOfBirth { get; set; }
-        //[Column(TypeName = "nvarchar(24)")]
         public GenderType Gender { get; set; }
         public double Weight { get; set; }
         public double PretreatmentDose { get; set; } = -2;
-        //[Column(TypeName = "nvarchar(24)")]
         public DrugType PretreatmentDrug { get; set; }
         [Column(TypeName = "date")]
         public DateTime DateOfOperation { get; set; }
         public double TreatmentDose { get; set; } = -2;
-        //[Column(TypeName = "nvarchar(24)")]
         public DrugType TreatmentDrug { get; set; }
-        //[Column(TypeName = "nvarchar(32)")]
         public ThyroidType ThyroidCondition { get; set; }
-        //[Column(TypeName = "nvarchar(32)")]
         public PathologyType Pathology { get; set; }
         public double lowTshLevel { get; set; } = 0.35;
         public double upTshLevel { get; set; } = 4;
