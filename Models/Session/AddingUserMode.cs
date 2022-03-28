@@ -17,7 +17,6 @@ namespace HypothyroBot.Models.Session
         public async Task<AliceResponse> HandleRequest(AliceRequest aliceRequest, ApplicationContext db)
         {
             string text = "";
-            string tts = null;
             var buttons = new List<ButtonModel>();
             if (User?.Id == null)
             {
