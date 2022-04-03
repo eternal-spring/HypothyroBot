@@ -1,0 +1,36 @@
+﻿version: '3.4'
+
+networks:
+  hypothyrobot-dev:
+    driver: bridge 
+
+services:
+  hypothyrobot:
+    image: hypothyrobot:latest
+    depends_on:
+      - "localhost"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:80"     
+    environment:
+      DB_CONNECTION_STRING: "host=localhost;port=5432;database=usersdb;username=postgres;password=elpsycongroo"
+    networks:
+      - hypothyrobot-dev  
+  
+  localhost:
+    image: postgres:latest
+    ports:
+      - "5432"
+    restart: always
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "elpsycongroo"
+      POSTGRES_DB: "localhost"
+    networks:
+      - hypothyrobot-dev
+volumes:
+  db_volume:
+         
+    
