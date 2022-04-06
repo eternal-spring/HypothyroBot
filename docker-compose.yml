@@ -6,20 +6,20 @@ networks:
 
 services:
   hypothyrobot:
-    image: hypothyrobot:latest
+    image: eternalspring/hypothyrobot:latest
     depends_on:
       - "host.docker.internal"
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8000:80"     
+      - "8000:80"   
     environment:
       DB_CONNECTION_STRING: "host=host.docker.internal;port=5432;database=usersdb;username=postgres;password=elpsycongroo"
     networks:
       - hypothyrobot-dev  
     extra_hosts:
-      - "host.docker.internal:172.19.0.1"
+      - "host.docker.internal:host-gateway"
 
   host.docker.internal:
     image: postgres:latest
