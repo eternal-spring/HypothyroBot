@@ -25,6 +25,11 @@ namespace HypothyroBot
             .HasPostgresEnum<ModeType>()
             .HasPostgresEnum<GenderType>()
             .HasPostgresEnum<PathologyType>()
-            .HasPostgresEnum<ThyroidType>();
+            .HasPostgresEnum<ThyroidType>()
+            .Entity<Test>(entity =>
+            {
+                entity.Property(e => e.Actual)
+                .HasDefaultValueSql("true");
+            });
     }
 }

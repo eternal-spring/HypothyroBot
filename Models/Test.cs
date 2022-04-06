@@ -11,6 +11,7 @@ namespace HypothyroBot.Models
         public double TshLevel { get; set; }
         [Column(TypeName = "date")]
         public DateTime TestDate { get; set; }
+        public bool Actual { get; set; }
         public virtual User User { get; set; }
         public Test()
         {
