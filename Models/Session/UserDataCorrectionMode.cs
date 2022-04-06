@@ -3,6 +3,7 @@ using HypothyroBot.Models.Session.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -29,7 +30,7 @@ namespace HypothyroBot.Models.Session
                             {
                                 var dose = (from d in aliceRequest.Request.Nlu.Entities where (d as NumberModel != null) select (d as NumberModel).Value).First();
                                 User.TreatmentDose = (double)dose;
-                                text = "Теперь вы не принимаете тироксин.";
+                                text = "Теперь вы не принимаете тироксин. ";
                                 buttons = new List<ButtonModel>() { new ButtonModel("Я сдал анализы", true), new ButtonModel("Когда мне сдавать анализы?", true),
                                     new ButtonModel("Мои прошлые ТТГ?", true), new ButtonModel("У меня другая доза лекарства", true) };
                                 if (User.TreatmentDose > 0)
@@ -65,7 +66,7 @@ namespace HypothyroBot.Models.Session
                                                                                                                 new ButtonModel("другой", true) };
                                 return new AliceResponse(aliceRequest, "Не поняла, повторите", buttons);
                             }
-                            text = $"Теперь вы принимаете {User.TreatmentDose} мкг левотироксина.";
+                            text = $"Теперь вы принимаете {User.TreatmentDose} мкг левотироксина. ";
                             if (User.TreatmentDrug != DrugType.Another)
                             {
                                 text += $"Препарат - { ((DescriptionAttribute)User.TreatmentDrug.GetType().GetMember(User.TreatmentDrug.ToString())[0].GetCustomAttributes(typeof(DescriptionAttribute), false)[0]).Description}. ";
@@ -129,7 +130,7 @@ namespace HypothyroBot.Models.Session
                                 {
                                     return new AliceResponse(aliceRequest, text, true);
                                 }
-                                text = $"Ваша дата рождения - {User.DateOfBirth}.";
+                                text = $"Ваша дата рождения - {User.DateOfBirth.ToString("d MMMM yyyy", CultureInfo.CreateSpecificCulture("ru-RU"))}.";
                             }
                             catch
                             {
@@ -246,7 +247,7 @@ namespace HypothyroBot.Models.Session
                                 {
                                     return new AliceResponse(aliceRequest, text, true);
                                 }
-                                text = $"Дата вашей операции - {User.DateOfOperation}.";
+                                text = $"Дата вашей операции - {User.DateOfOperation.ToString("d MMMM yyyy", CultureInfo.CreateSpecificCulture("ru-RU"))}.";
                             }
                             catch
                             {

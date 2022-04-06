@@ -42,6 +42,13 @@ namespace HypothyroBot.Models.Session
                         return new AliceResponse(aliceRequest, "Не поняла, повторите");
                     }
                     text = "Назовите дату сдачи анализа";
+                    db.Users.Update(User);
+                    await db.SaveChangesAsync();
+                    return new AliceResponse(aliceRequest, text, tts, buttons)
+                    {
+                        SessionState = new SessionState() { Authorised = true, LastResponse = text },
+                    };
+
                 }
                 else if (User.Tests?.Last().TestDate == default(DateTime))
                 {
@@ -58,10 +65,18 @@ namespace HypothyroBot.Models.Session
                             }
                             User.Tests.Last().TestDate = new DateTime((int)td.Year, (int)td.Month, (int)td.Day);
                         }
-                        if (User.Tests?.Last()?.TestDate > User.DateOfOperation.AddDays(User.checkinterval))
+                        if (User.Tests?.Last().TestDate == default(DateTime))
                         {
+                            return new AliceResponse(aliceRequest, "Не поняла, повторите");
+                        }
+                        if (User.Tests?.Last()?.TestDate < DateTime.Now.AddDays(-User.checkinterval))
+                        {
+                            User.Tests.Last().Actual = false;
                             text = $"Данный анализ не актуален. Прошло более {User.checkinterval} дней с момента сдачи. " +
                                 $"Рекомендуется повторить.";
+                            User.Mode = ModeType.OnReminder;
+                            buttons = new List<ButtonModel>() { new ButtonModel("Я сдал анализы", true), new ButtonModel("Когда мне сдавать анализы?", true),
+                        new ButtonModel("Мои прошлые ТТГ?", true), new ButtonModel("У меня другая доза лекарства", true) };
                         }
                         else
                         {

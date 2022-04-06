@@ -36,6 +36,10 @@ namespace HypothyroBot.Models.Session
                                     "решение о заместительной терапии можно отложить на 2 месяца. " +
                                     "Давайте проконтролируем ТТГ.";
                             }
+                            else
+                            {
+                                return new AliceResponse(aliceRequest, "Не поняла, повторите");
+                            }
                             User.checkinterval = 60; 
                             User.Mode = ModeType.OnReminder;
                         }
@@ -47,17 +51,19 @@ namespace HypothyroBot.Models.Session
                                     "Есть ли у вас сердцебиения, потливость, быстрая утомляемость, то имеет смысл снизить дозу на ";
                                 text += (User.DateOfBirth.CompareTo(DateTime.Now.AddYears(-70)) < 0 || User.Weight < 55) ? "12,5 мкг." :
                                     "25 мкг. ";
-                                text += "Затем следует проконтролировать ТТГ через 2 месяца";
+                                text += "Затем следует проконтролировать ТТГ через 2 месяца.";
                                 User.checkinterval = 60;
-                                User.Mode = ModeType.OnReminder;
-
                             }
                             else if (aliceRequest.Request.Nlu.Tokens.First().StartsWith("не"))
                             {
                                 text = "Контроль через 3 месяца.";
                                 User.checkinterval = 90; 
-                                User.Mode = ModeType.OnReminder;
                             }
+                            else
+                            {
+                                return new AliceResponse(aliceRequest, "Не поняла, повторите");
+                            }
+                            User.Mode = ModeType.OnReminder;
                         }
                         db.Users.Update(User);
                         await db.SaveChangesAsync();
@@ -73,18 +79,19 @@ namespace HypothyroBot.Models.Session
                         {
                             if (User.Tests?.Last()?.TshLevel < User.lowTshLevel)
                             {
-                                text = "Есть риск что у вас тиреотоксикоз. Если вы ранее не сталкивались " +
-                                    "с этим нужно сдать кровь на свободные фракции T3 и Т4 и антитела к " +
+                                text = "Есть риск, что у вас тиреотоксикоз. Если вы ранее не сталкивались " +
+                                    "с этим, нужно сдать кровь на свободные фракции T3 и Т4 и антитела к " +
                                     "рецептору ТТГ и обратиться к эндокринологу.";
+                                User.Mode = ModeType.OnReminder;
                             }
                             else if (User.Tests?.Last()?.TshLevel > User.upTshLevel)
                             {
                                 text = "Вероятно, ваша железа не справляется с обеспечением вас гормонами. ";
                                 if (User.Tests?.Last()?.TshLevel < 6)
                                 {
-                                    text += "Повышение ТТГ означает что щитовидная железа (то, что от нее осталось " +
+                                    text += "Повышение ТТГ означает, что щитовидная железа (то, что от нее осталось " +
                                         "после операции) вырабатывает меньше гормонов, чем нужно, однако разница " +
-                                        "не настолько значима. Если вы себя нормально чувствуете можно не спешить " +
+                                        "не настолько значима. Если вы себя нормально чувствуете, можно не спешить " +
                                         "с назначением гормонов. Имеются ли у Вас жалобы на сонливость, редкий пульс?";
                                     buttons = new List<ButtonModel>() { new ButtonModel("да", true), new ButtonModel("нет", true), };
                                     User.Mode = ModeType.Control;
@@ -124,8 +131,17 @@ namespace HypothyroBot.Models.Session
                                         "группы риска. У вас были множественные метастазы, операции по поводу рецидивов, " +
                                         "планируется терапия радиоактивным йодом, имеются высокие уровни тиреоглобуллина?";
                                     buttons = new List<ButtonModel>() { new ButtonModel("да", true), new ButtonModel("нет", true), };
+                                    User.Mode = ModeType.Control;
                                 }
-                                User.Mode = ModeType.Control;
+                                else
+                                {
+                                    text += "Вам, вероятно, нужно снизить дозу на ";
+                                    text += (User.DateOfBirth.CompareTo(DateTime.Now.AddYears(-70)) < 0 || User.Weight < 55) ? "12,5 мкг." :
+                                        "25 мкг. ";
+                                    text += "Затем следует проконтролировать ТТГ через 2 месяца.";
+                                    User.checkinterval = 60;
+                                    User.Mode = ModeType.OnReminder;
+                                }
                             }
                             else if (User.Tests?.Last()?.TshLevel > User.upTshLevel)
                             {
@@ -165,6 +181,12 @@ namespace HypothyroBot.Models.Session
                         }
                         db.Users.Update(User);
                         await db.SaveChangesAsync();
+                        if (User.Mode == ModeType.OnReminder)
+                        {
+                            buttons = new List<ButtonModel>() { new ButtonModel("Я сдал анализы", true), new ButtonModel("Когда мне сдавать анализы?", true),
+                        new ButtonModel("Мои прошлые ТТГ?", true), new ButtonModel("У меня другая доза лекарства", true) };
+
+                        }
                         var response = new AliceResponse(aliceRequest, text, buttons)
                         {
                             SessionState = aliceRequest.State.Session,
