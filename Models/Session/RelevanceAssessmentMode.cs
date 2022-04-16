@@ -18,6 +18,7 @@ namespace HypothyroBot.Models.Session
         public async Task<AliceResponse> HandleRequest(AliceRequest aliceRequest, ApplicationContext db)
         {
             string text;
+            string tts = null;
             switch (User.Mode)
             {
                 case ModeType.RelevanceAssessment:
@@ -129,11 +130,12 @@ namespace HypothyroBot.Models.Session
                                 }
                             }
                             text += "Всё верно? ";
+                            tts = text.Replace("мкг", "микрограмм");
                             var buttons = new List<ButtonModel> { new ButtonModel("да", true), new ButtonModel("нет", true) };
                             User.Mode = ModeType.RelevanceAssessment;
                             db.Users.Update(User);
                             await db.SaveChangesAsync();
-                            return new AliceResponse(aliceRequest, text, buttons);
+                            return new AliceResponse(aliceRequest, text, tts, buttons);
                         }
                     }
             }

@@ -28,9 +28,14 @@ namespace HypothyroBot.Models.Session
                 await db.SaveChangesAsync();
                 text = "Привет, я навык для наблюдения за функцией щитовидной железы у оперированных пациентов " +
                                                       "или контроля заместительной терапии. Давайте знакомиться! Представьтесь";
+                return new AliceResponse(aliceRequest, text, buttons)
+                {
+                    SessionState = new SessionState() { Authorised = true, Id = User.Id, LastResponse = text, LastButtons = buttons },
+                };
             }
             else if (aliceRequest.Session.New)
             {
+                
                 text = aliceRequest.State.Session.LastResponse;
                 buttons = aliceRequest.State.Session.LastButtons;
             }
@@ -344,7 +349,7 @@ namespace HypothyroBot.Models.Session
             }
             else if (User.PretreatmentDose == 0 && User.TreatmentDose > 0 && User.TreatmentDrug == DrugType.None)
             {
-                var lt = new string[] { "l-тироксин", "элтироксин", "эл тироксин","l тироксин" };
+                var lt = new string[] { "l-тироксин", "элтироксин", "эл тироксин", "l тироксин", "л тироксин", "эль тироксин", "эльтироксин" };
                 if (aliceRequest.Request.Command.Contains("эутирокс"))
                 {
                     User.TreatmentDrug = DrugType.Eutirox;
@@ -393,7 +398,7 @@ namespace HypothyroBot.Models.Session
             }
             else if (User.TreatmentDose > 0 && User.TreatmentDrug == DrugType.None)
             {
-                var lt = new string[] { "l-тироксин", "элтироксин", "эл тироксин" , "l тироксин" };
+                var lt = new string[] { "l-тироксин", "элтироксин", "эл тироксин" , "l тироксин", "л тироксин", "эль тироксин", "эльтироксин" };
                 if (aliceRequest.Request.Command.Contains("да"))
                 {
                     User.TreatmentDrug = User.PretreatmentDrug;
@@ -433,7 +438,8 @@ namespace HypothyroBot.Models.Session
             }
             db.Users.Update(User);
             await db.SaveChangesAsync();
-            var response = new AliceResponse(aliceRequest, text, buttons)
+            string tts = text.Replace("ТТГ", "тэтэг+э").Replace("мкМЕ/мл", "эмк+а эм е на миллилитр");
+            var response = new AliceResponse(aliceRequest, text, tts, buttons)
             {
                 SessionState = new SessionState() { Authorised = true, Id = User.Id, LastResponse = text, LastButtons = buttons },
             };

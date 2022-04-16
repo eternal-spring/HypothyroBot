@@ -18,6 +18,7 @@ namespace HypothyroBot.Models.Session
         public async Task<AliceResponse> HandleRequest(AliceRequest aliceRequest, ApplicationContext db)
         {
             string text = "";
+            string tts = "";
             if (User.TreatmentDose == -2 || (User.TreatmentDose > 0 && User.TreatmentDrug == DrugType.None))
             {
                 return await new UserDataCorrectionMode(User).HandleRequest(aliceRequest, db);
@@ -33,6 +34,7 @@ namespace HypothyroBot.Models.Session
                     {
                         text += "Если вы еще не сдали ТТГ, то поспешите, рекомендованный интервал заканчивается через неделю. ";
                         text += "Вы сдали ТТГ?";
+                        tts = text.Replace("ТТГ", "тэтэг+э");
                         return new AliceResponse(aliceRequest, text, new List<ButtonModel>() { new ButtonModel("да", true), new ButtonModel("нет", true) })
                         {
                             SessionState = new SessionState() { Authorised = true, Id = User.Id, LastResponse = text },
@@ -43,6 +45,7 @@ namespace HypothyroBot.Models.Session
                         text += $"Уже прошло {Math.Truncate(daysPassed / 7)} недель с момента ";
                         text += User.Tests.Any() ? "смены терапии. " : "операции. ";
                         text += "Вы сдали ТТГ? ";
+                        tts = text.Replace("ТТГ", "тэтэг+э");
                         return new AliceResponse(aliceRequest, text, new List<ButtonModel>() { new ButtonModel("да", true), new ButtonModel("нет", true) })
                         {
                             SessionState = new SessionState() { Authorised = true, Id = User.Id, LastResponse = text },
@@ -62,6 +65,7 @@ namespace HypothyroBot.Models.Session
                 else if (daysPassed >= User.checkinterval)
                 {
                     text += "Пришло время контроля ТТГ.  Вы сдали ТТГ?";
+                    tts = text.Replace("ТТГ", "тэтэг+э");
                     return new AliceResponse(aliceRequest, text, new List<ButtonModel>() { new ButtonModel("да", true), new ButtonModel("нет", true) })
                     {
                         SessionState = new SessionState() { Authorised = true, Id = User.Id, LastResponse = text },
@@ -90,7 +94,8 @@ namespace HypothyroBot.Models.Session
                         text = $"Ваш последний анализ: {lastTest.TshLevel} мкМЕ/мл, ";
                         text += $"дата сдачи: {lastTest.TestDate.ToString("d MMMM yyyy", CultureInfo.CreateSpecificCulture("ru-RU"))}. ";
                         text += $"Хотите узнать более ранние ТТГ?";
-                        return new AliceResponse(aliceRequest, text, new List<ButtonModel>() { new ButtonModel("да", true), new ButtonModel("нет", true) })
+                        tts = text.Replace("ТТГ", "тэтэг+э").Replace("мкМЕ/мл", "эмк+а эм е на миллилитр");
+                        return new AliceResponse(aliceRequest, text, tts, new List<ButtonModel>() { new ButtonModel("да", true), new ButtonModel("нет", true) })
                         {
                             SessionState = new SessionState() { Authorised = true, Id = User.Id, LastResponse = text },
                         };
@@ -111,7 +116,8 @@ namespace HypothyroBot.Models.Session
                         text = $"Ваши ТТГ: ";
                         foreach (var test in User.Tests.OrderBy(t => t.TestDate))
                         {
-                            text += $"{test.TestDate.ToString("d MMMM yyyy", CultureInfo.CreateSpecificCulture("ru-RU"))}: {test.TshLevel} мкМЕ/мл, ";
+                            text += $"{test.TestDate.ToString("d MMMM yyyy", CultureInfo.CreateSpecificCulture("ru-RU"))}, ";
+                            text += $" {test.TshLevel} мкМЕ/мл; ";
                         }
                         text += "вы всегда можете сообщить мне об изменениях в самочувствии, терапии, данных анализов.";
                     }
@@ -125,9 +131,10 @@ namespace HypothyroBot.Models.Session
                     return await new UserDataCorrectionMode(User).HandleRequest(aliceRequest, db);
                 }
             }
+            tts = text.Replace("ТТГ", "тэтэг+э").Replace("мкМЕ/мл","эмк+а эм е на миллилитр");
             var buttons = new List<ButtonModel>() { new ButtonModel("Я сдал анализы", true), new ButtonModel("Когда мне сдавать анализы?", true),
                         new ButtonModel("Мои прошлые ТТГ?", true), new ButtonModel("У меня другая доза лекарства", true) };
-            var response = new AliceResponse(aliceRequest, text, buttons)
+            var response = new AliceResponse(aliceRequest, text, tts, buttons)
             {
                 SessionState = new SessionState() {Authorised = true, Id = User.Id, LastResponse = text },
             };

@@ -47,7 +47,7 @@ namespace HypothyroBot.Models.Session
                         }
                         else if (User.TreatmentDose > 0 && User.TreatmentDrug == DrugType.None)
                         {
-                            var lt = new string[] { "l-тироксин", "элтироксин", "эл тироксин", "l тироксин" };
+                            var lt = new string[] { "l-тироксин", "элтироксин", "эл тироксин", "l тироксин", "л тироксин", "эль тироксин", "эльтироксин" };
                             if (aliceRequest.Request.Command.Contains("эутирокс"))
                             {
                                 User.TreatmentDrug = DrugType.Eutirox;
@@ -203,7 +203,7 @@ namespace HypothyroBot.Models.Session
                         }
                         else if (User.PretreatmentDose > 0 && User.PretreatmentDrug == DrugType.None)
                         {
-                            var lt = new string[] { "l-тироксин", "элтироксин", "эл тироксин", "l тироксин" };
+                            var lt = new string[] { "l-тироксин", "элтироксин", "эл тироксин", "l тироксин", "л тироксин", "эль тироксин", "эльтироксин" };
                             if (aliceRequest.Request.Command.Contains("эутирокс"))
                             {
                                 User.PretreatmentDrug = DrugType.Eutirox;
@@ -365,7 +365,7 @@ namespace HypothyroBot.Models.Session
                         }
                         else if (User.TreatmentDose > 0 && User.TreatmentDrug == DrugType.None)
                         {
-                            var lt = new string[] { "l-тироксин", "элтироксин", "эл тироксин", "l тироксин" };
+                            var lt = new string[] { "l-тироксин", "элтироксин", "эл тироксин", "l тироксин", "л тироксин", "эль тироксин", "эльтироксин" };
                             if (aliceRequest.Request.Command.Contains("эутирокс"))
                             {
                                 User.TreatmentDrug = DrugType.Eutirox;
@@ -462,7 +462,8 @@ namespace HypothyroBot.Models.Session
                         }
                         db.Users.Update(User);
                         await db.SaveChangesAsync();
-                        var response = new AliceResponse(aliceRequest, text, buttons)
+                        string tts = text.Replace("ТТГ", "тэтэ+гэ").Replace("мкМЕ/мл", "эмк+а эм е на миллилитр");
+                        var response = new AliceResponse(aliceRequest, text, tts, buttons)
                         {
                             SessionState = new SessionState() { Authorised = true, Id = User.Id, LastResponse = text, LastButtons = buttons },
                         };

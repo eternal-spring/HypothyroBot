@@ -18,6 +18,7 @@ namespace HypothyroBot.Models.Session
         public async Task<AliceResponse> HandleRequest(AliceRequest aliceRequest, ApplicationContext db)
         {
             string text = "";
+            string tts = "";
             var buttons = new List<ButtonModel>();
             switch (User.Mode)
             {
@@ -65,9 +66,10 @@ namespace HypothyroBot.Models.Session
                             }
                             User.Mode = ModeType.OnReminder;
                         }
+                        tts = text.Replace("ТТГ", "тэтэ+гэ");
                         db.Users.Update(User);
                         await db.SaveChangesAsync();
-                        var response = new AliceResponse(aliceRequest, text, buttons)
+                        var response = new AliceResponse(aliceRequest, text, tts, buttons)
                         {
                             SessionState = aliceRequest.State.Session,
                         };
@@ -181,13 +183,14 @@ namespace HypothyroBot.Models.Session
                         }
                         db.Users.Update(User);
                         await db.SaveChangesAsync();
+                        tts = text.Replace("ТТГ", "тэтэг+э").Replace("мкМЕ/мл", "эмк+а эм е на миллилитр");
                         if (User.Mode == ModeType.OnReminder)
                         {
                             buttons = new List<ButtonModel>() { new ButtonModel("Я сдал анализы", true), new ButtonModel("Когда мне сдавать анализы?", true),
                         new ButtonModel("Мои прошлые ТТГ?", true), new ButtonModel("У меня другая доза лекарства", true) };
 
                         }
-                        var response = new AliceResponse(aliceRequest, text, buttons)
+                        var response = new AliceResponse(aliceRequest, text, tts, buttons)
                         {
                             SessionState = aliceRequest.State.Session,
                         };

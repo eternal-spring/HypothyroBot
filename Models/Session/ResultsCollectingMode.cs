@@ -93,6 +93,7 @@ namespace HypothyroBot.Models.Session
             }
             db.Users.Update(User);
             await db.SaveChangesAsync();
+            tts = text.Replace("ТТГ", "тэтэг+э").Replace("мкМЕ/мл", "эмк+а эм е на миллилитр");
             var response = new AliceResponse(aliceRequest, text, tts, buttons)
             {
                 SessionState = new SessionState() { Authorised = true, LastResponse = text },
