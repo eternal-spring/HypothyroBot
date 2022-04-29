@@ -53,14 +53,19 @@ namespace HypothyroBot.Models.Session
                                select (date as DateTimeModel).Value).First();
                     if (bd != null)
                     {
-                        if ((int)bd.Year < 2000)
+                        if ((int)bd.Year < 30)
                         {
                             bd.Year += 2000;
+                        }
+                        else if ((int)bd.Year < 100)
+                        {
+                            bd.Year += 1900;
                         }
                         User.DateOfBirth = new DateTime((int)bd.Year, (int)bd.Month, (int)bd.Day);
                     }
                     if ((int.Parse(DateTime.Now.ToString("yyyyMMdd")) - int.Parse(User.DateOfBirth.ToString("yyyyMMdd"))) / 10000 < 18)
                     {
+                        text = "Навык предназначен для совершеннолетних пользователей, Спасибо, до свидания.";
                         return new AliceResponse(aliceRequest, text, true);
                     }
                 }
@@ -78,6 +83,7 @@ namespace HypothyroBot.Models.Session
                 {
                     User.Gender = GenderType.Male;
                 }
+
                 else if (aliceRequest.Request.Nlu.Tokens.First().Contains("жен"))
                 {
                     User.Gender = GenderType.Female;
@@ -207,9 +213,13 @@ namespace HypothyroBot.Models.Session
                                select (date as DateTimeModel).Value).First();
                     if (od != null)
                     {
-                        if ((int)od.Year < 2000)
+                        if ((int)od.Year < 30)
                         {
                             od.Year += 2000;
+                        }
+                        else if ((int)od.Year < 100)
+                        {
+                            od.Year += 1900;
                         }
                         User.DateOfOperation = new DateTime((int)od.Year, (int)od.Month, (int)od.Day);
                         buttons = new List<ButtonModel>() { new ButtonModel("Да", true), new ButtonModel("Половина", true),

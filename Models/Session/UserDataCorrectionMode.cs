@@ -120,9 +120,13 @@ namespace HypothyroBot.Models.Session
                                           select (date as DateTimeModel).Value).First();
                                 if (bd != null)
                                 {
-                                    if ((int)bd.Year < 2000)
+                                    if ((int)bd.Year < 30)
                                     {
                                         bd.Year += 2000;
+                                    }
+                                    else if ((int)bd.Year < 100)
+                                    {
+                                        bd.Year += 1900;
                                     }
                                     User.DateOfBirth = new DateTime((int)bd.Year, (int)bd.Month, (int)bd.Day);
                                 }
@@ -237,9 +241,13 @@ namespace HypothyroBot.Models.Session
                                           select (date as DateTimeModel).Value).First();
                                 if (bd != null)
                                 {
-                                    if ((int)bd.Year < 2000)
+                                    if ((int)bd.Year < 30)
                                     {
                                         bd.Year += 2000;
+                                    }
+                                    else if ((int)bd.Year < 100)
+                                    {
+                                        bd.Year += 1900;
                                     }
                                     User.DateOfOperation = new DateTime((int)bd.Year, (int)bd.Month, (int)bd.Day);
                                 }
