@@ -39,7 +39,7 @@ namespace HypothyroBot.Models.Session
                             }
                             else
                             {
-                                return new AliceResponse(aliceRequest, "Не поняла, повторите");
+                                return new AliceResponse(aliceRequest, "Не поняла, повторите.");
                             }
                             User.checkinterval = 60; 
                             User.Mode = ModeType.OnReminder;
@@ -62,7 +62,7 @@ namespace HypothyroBot.Models.Session
                             }
                             else
                             {
-                                return new AliceResponse(aliceRequest, "Не поняла, повторите");
+                                return new AliceResponse(aliceRequest, "Не поняла, повторите.");
                             }
                             User.Mode = ModeType.OnReminder;
                         }
@@ -104,12 +104,12 @@ namespace HypothyroBot.Models.Session
                                         "Обычно эндокринологи начинают с дозы в 50 мкг левотироксина. Контроль ТТГ через ";
                                     if (User.Tests?.Last()?.TshLevel > 10)
                                     {
-                                        text += "1,5 месяца";
+                                        text += "1,5 месяца.";
                                         User.checkinterval = 45;
                                     }
                                     else
                                     {
-                                        text += "2 месяца";
+                                        text += "2 месяца.";
                                         User.checkinterval = 60;
                                     }
                                     User.Mode = ModeType.OnReminder;
@@ -117,7 +117,7 @@ namespace HypothyroBot.Models.Session
                             }
                             else
                             {
-                                text = "У вас отличный уровень ТТГ. Следующий раз контроль через 6 месяцев";
+                                text = "У вас отличный уровень ТТГ. Следующий раз контроль через 6 месяцев.";
                                 User.Mode = ModeType.OnReminder;
                             }
                         }
@@ -147,7 +147,7 @@ namespace HypothyroBot.Models.Session
                             }
                             else if (User.Tests?.Last()?.TshLevel > User.upTshLevel)
                             {
-                                if (User.Tests?.Last()?.TshLevel > 6 && User.Tests?.Last()?.TshLevel < 10)
+                                if (User.Tests?.Last()?.TshLevel >= 6 && User.Tests?.Last()?.TshLevel <= 10)
                                 {
                                     text = "Вам нужно увеличить дозу на ";
                                     text += (User.DateOfBirth.CompareTo(DateTime.Now.AddYears(-70)) < 0 || User.Weight < 55) ? "12,5 мкг." :
@@ -161,6 +161,22 @@ namespace HypothyroBot.Models.Session
                                         "на 25 мкг. Контроль ТТГ через 1,5 месяца.";
                                     User.checkinterval = 45;
                                 }
+                                else
+                                {
+                                    text = $"У вас отличный уровень ТТГ. Продолжайте принимать " +
+                                    $"{((DescriptionAttribute)User.TreatmentDrug.GetType().GetMember(User.TreatmentDrug.ToString())[0].GetCustomAttributes(typeof(DescriptionAttribute), false)[0]).Description} " +
+                                    $"по {User.TreatmentDose} мкг. Следующий раз контроль через ";
+                                    if (User.checkinterval >= 180)
+                                    {
+                                        text += "год.";
+                                        User.checkinterval = 365;
+                                    }
+                                    else
+                                    {
+                                        text += "6 месяцев.";
+                                        User.checkinterval = 180;
+                                    }
+                                }
                                 User.Mode = ModeType.OnReminder;
                             }
                             else
@@ -170,12 +186,12 @@ namespace HypothyroBot.Models.Session
                                 $"по {User.TreatmentDose} мкг. Следующий раз контроль через ";
                                 if (User.checkinterval >= 180)
                                 {
-                                    text += "год";
+                                    text += "год.";
                                     User.checkinterval = 365;
                                 }
                                 else
                                 {
-                                    text += "6 месяцев";
+                                    text += "6 месяцев.";
                                     User.checkinterval = 180;
                                 }
                                 User.Mode = ModeType.OnReminder;

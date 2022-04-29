@@ -52,7 +52,7 @@ namespace HypothyroBot.Models.Session
                         }
                         else
                         {
-                            return new AliceResponse(aliceRequest, "Не поняла, повторите");
+                            return new AliceResponse(aliceRequest, "Не поняла, повторите.");
                         }
                     }
                 default:
@@ -106,7 +106,7 @@ namespace HypothyroBot.Models.Session
                             }
                             else if (User.ThyroidCondition == ThyroidType.LobeRemainderLeft)
                             {
-                                text += "оставлен небольшой остаток доли щитовидки";
+                                text += "оставлен небольшой остаток доли щитовидки, ";
                             }
                             if (User.Pathology != PathologyType.Another)
                             {
@@ -115,7 +115,7 @@ namespace HypothyroBot.Models.Session
                             }
                             if (User.TreatmentDose == 0)
                             {
-                                text += "терапия левотироксином не была назначена";
+                                text += "терапия левотироксином не была назначена. ";
                             }
                             else if (User.TreatmentDose > 0)
                             {

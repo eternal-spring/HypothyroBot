@@ -66,7 +66,7 @@ namespace HypothyroBot.Models.Session
                 }
                 catch
                 {
-                    return new AliceResponse(aliceRequest, "Не поняла, повторите");
+                    return new AliceResponse(aliceRequest, "Не поняла, повторите.");
                 }
                 buttons = new List<ButtonModel>() { new ButtonModel("мужской", true), new ButtonModel("женский", true),
                     new ButtonModel("отказываюсь отвечать", true) };
@@ -90,7 +90,7 @@ namespace HypothyroBot.Models.Session
                 {
                     buttons = new List<ButtonModel>() { new ButtonModel("мужской", true), new ButtonModel("женский", true), 
                         new ButtonModel("отказываюсь отвечать", true) };
-                    return new AliceResponse(aliceRequest, "Не поняла, повторите", buttons);
+                    return new AliceResponse(aliceRequest, "Не поняла, повторите.", buttons);
                 }
                 text = "Сколько вы весите?";
             }
@@ -106,7 +106,7 @@ namespace HypothyroBot.Models.Session
                 }
                 catch
                 {
-                    return new AliceResponse(aliceRequest, "Не поняла, повторите");
+                    return new AliceResponse(aliceRequest, "Не поняла, повторите.");
                 }
                 if ((User.Gender == GenderType.Female || User.Gender == GenderType.Unknown) && 18 < 
                     DateTime.Now.Subtract(User.DateOfBirth).TotalDays / 365.2425 && DateTime.Now.Subtract(User.DateOfBirth).TotalDays / 365.2425 < 45)
@@ -139,7 +139,7 @@ namespace HypothyroBot.Models.Session
                 else
                 {
                     buttons = new List<ButtonModel>() { new ButtonModel("да", true), new ButtonModel("нет", true), };
-                    return new AliceResponse(aliceRequest, "Не поняла, повторите", buttons);
+                    return new AliceResponse(aliceRequest, "Не поняла, повторите.", buttons);
                 }
             }
             else if (User.PretreatmentDose == -2)
@@ -157,7 +157,7 @@ namespace HypothyroBot.Models.Session
                 else
                 {
                     buttons = new List<ButtonModel>() { new ButtonModel("да", true), new ButtonModel("нет", true), };
-                    return new AliceResponse(aliceRequest, "Не поняла, повторите", buttons);
+                    return new AliceResponse(aliceRequest, "Не поняла, повторите.", buttons);
                 }
             }
             else if (User.PretreatmentDose == -1)
@@ -172,7 +172,7 @@ namespace HypothyroBot.Models.Session
                 }
                 catch
                 {
-                    return new AliceResponse(aliceRequest, "Не поняла, повторите");
+                    return new AliceResponse(aliceRequest, "Не поняла, повторите.");
                 }
             }
             else if (User.PretreatmentDose > 0 && User.PretreatmentDrug == DrugType.None)
@@ -194,7 +194,7 @@ namespace HypothyroBot.Models.Session
                 {
                     buttons = new List<ButtonModel>() { new ButtonModel("эутирокс", true), new ButtonModel("L-тироксин", true),
                                                                                                                 new ButtonModel("другой", true) };
-                    return new AliceResponse(aliceRequest, "Не поняла, повторите", buttons);
+                    return new AliceResponse(aliceRequest, "Не поняла, повторите.", buttons);
                 }
                 text = "Когда была операция?";
             }
@@ -220,7 +220,7 @@ namespace HypothyroBot.Models.Session
                 }
                 catch
                 {
-                    return new AliceResponse(aliceRequest, "Не поняла, повторите");
+                    return new AliceResponse(aliceRequest, "Не поняла, повторите.");
                 }
             }
             else if (User.ThyroidCondition == ThyroidType.None)
@@ -255,7 +255,7 @@ namespace HypothyroBot.Models.Session
                     var b = new List<ButtonModel>() { new ButtonModel("Да", true), new ButtonModel("Половина", true),
                         new ButtonModel("Перешеек", true), new ButtonModel("Оставлен небольшой остаток доли",true), 
                         new ButtonModel("Затрудняюсь ответить",true) };
-                    return new AliceResponse(aliceRequest, "Не поняла, повторите", b);
+                    return new AliceResponse(aliceRequest, "Не поняла, повторите.", b);
                 }
                 buttons = new List<ButtonModel>() { new ButtonModel("Фолликулярная аденома/ узловой нетоксический зоб", true),
                         new ButtonModel("Тиреоидит Хашимото / диффузный токсический зоб", true),
@@ -297,7 +297,7 @@ namespace HypothyroBot.Models.Session
                         new ButtonModel("Тиреоидит Хашимото / диффузный токсический зоб", true),
                         new ButtonModel("Папиллярная / фолликулярная карцинома", true),
                                   new ButtonModel("Медуллярная карцинома",true), new ButtonModel("Другое",true) };
-                    return new AliceResponse(aliceRequest, "Не поняла, повторите", b);
+                    return new AliceResponse(aliceRequest, "Не поняла, повторите.", b);
                 }
                 if (User.PretreatmentDose == 0)
                 {
@@ -326,7 +326,7 @@ namespace HypothyroBot.Models.Session
                 else
                 {
                     buttons = new List<ButtonModel>() { new ButtonModel("Да", true), new ButtonModel("Нет", true) };
-                    return new AliceResponse(aliceRequest, "Не поняла, повторите", buttons);
+                    return new AliceResponse(aliceRequest, "Не поняла, повторите.", buttons);
                 }
             }
             else if (User.PretreatmentDose == 0 && User.TreatmentDose == -1)
@@ -344,7 +344,7 @@ namespace HypothyroBot.Models.Session
                 }
                 catch
                 {
-                    return new AliceResponse(aliceRequest, "Не поняла, повторите");
+                    return new AliceResponse(aliceRequest, "Не поняла, повторите.");
                 }
             }
             else if (User.PretreatmentDose == 0 && User.TreatmentDose > 0 && User.TreatmentDrug == DrugType.None)
@@ -367,7 +367,7 @@ namespace HypothyroBot.Models.Session
                 {
                     buttons = new List<ButtonModel>() { new ButtonModel("эутирокс", true), new ButtonModel("L-тироксин", true),
                                                                                                                 new ButtonModel("другой", true) };
-                    return new AliceResponse(aliceRequest, "Не поняла, повторите", buttons);
+                    return new AliceResponse(aliceRequest, "Не поняла, повторите.", buttons);
                 }
                 db.Users.Update(User);
                 await db.SaveChangesAsync();
@@ -393,7 +393,7 @@ namespace HypothyroBot.Models.Session
                 }
                 catch
                 {
-                    return new AliceResponse(aliceRequest, "Не поняла, повторите");
+                    return new AliceResponse(aliceRequest, "Не поняла, повторите.");
                 }
             }
             else if (User.TreatmentDose > 0 && User.TreatmentDrug == DrugType.None)
@@ -429,7 +429,7 @@ namespace HypothyroBot.Models.Session
                     }
                     else
                     {
-                        return new AliceResponse(aliceRequest, "Не поняла, повторите");
+                        return new AliceResponse(aliceRequest, "Не поняла, повторите.");
                     }
                 }
                 db.Users.Update(User);

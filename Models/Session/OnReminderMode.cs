@@ -54,7 +54,7 @@ namespace HypothyroBot.Models.Session
                     else if (daysPassed >= 28)
                     {
 
-                        text += User.Tests.Any() ? "После изменения дозировки " : "после назначения лекарственной терапии ";
+                        text += User.Tests.Any() ? "После изменения дозировки " : "После назначения лекарственной терапии ";
                         text += "контроль обычно осуществляется через 4-8 недель, найдите время и сдайте ТТГ.";
                     }
                     else
@@ -82,9 +82,9 @@ namespace HypothyroBot.Models.Session
                 {
                     text = $"Вам нужно сдать анализы не позднее, чем ";
                     if (User.Tests?.Where(t => t.Actual).Count() == 0)
-                        text += $"{User.DateOfOperation.AddDays(User.checkinterval).ToString("d MMMM yyyy", CultureInfo.CreateSpecificCulture("ru-RU"))}";
+                        text += $"{User.DateOfOperation.AddDays(User.checkinterval).ToString("d MMMM yyyy", CultureInfo.CreateSpecificCulture("ru-RU"))}.";
                     else
-                        text += $"{User.Tests.Where(t => t.Actual).Last().TestDate.AddDays(User.checkinterval).ToString("d MMMM yyyy", CultureInfo.CreateSpecificCulture("ru-RU"))}";
+                        text += $"{User.Tests.Where(t => t.Actual).Last().TestDate.AddDays(User.checkinterval).ToString("d MMMM yyyy", CultureInfo.CreateSpecificCulture("ru-RU"))}.";
                 }
                 else if (aliceRequest.Request.Command.Contains("прошл"))
                 {

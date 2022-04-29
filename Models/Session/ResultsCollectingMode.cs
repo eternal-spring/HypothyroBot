@@ -22,7 +22,7 @@ namespace HypothyroBot.Models.Session
             if (User.Mode != ModeType.ResultsCollecting)
             {
                 User.Tests?.Add(new Test {TshLevel = -2, Id = (User.Tests?.Count + 1).ToString() });
-                text = "Скажите значение ТТГ (в мкМЕ/мл)";
+                text = "Скажите значение ТТГ (в мкМЕ/мл).";
                 User.Mode = ModeType.ResultsCollecting;
             }
             else
@@ -39,9 +39,9 @@ namespace HypothyroBot.Models.Session
                     }
                     catch
                     {
-                        return new AliceResponse(aliceRequest, "Не поняла, повторите");
+                        return new AliceResponse(aliceRequest, "Не поняла, повторите.");
                     }
-                    text = "Назовите дату сдачи анализа";
+                    text = "Назовите дату сдачи анализа.";
                     db.Users.Update(User);
                     await db.SaveChangesAsync();
                     return new AliceResponse(aliceRequest, text, tts, buttons)
@@ -67,7 +67,7 @@ namespace HypothyroBot.Models.Session
                         }
                         if (User.Tests?.Last().TestDate == default(DateTime))
                         {
-                            return new AliceResponse(aliceRequest, "Не поняла, повторите");
+                            return new AliceResponse(aliceRequest, "Не поняла, повторите.");
                         }
                         if (User.Tests?.Last()?.TestDate < DateTime.Now.AddDays(-User.checkinterval))
                         {
@@ -87,7 +87,7 @@ namespace HypothyroBot.Models.Session
                     }
                     catch
                     {
-                        return new AliceResponse(aliceRequest, "Не поняла, повторите");
+                        return new AliceResponse(aliceRequest, "Не поняла, повторите.");
                     }
                 }
             }
