@@ -2,6 +2,7 @@
 using HypothyroBot.Models.Session.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -41,7 +42,7 @@ namespace HypothyroBot.Models.Session
             }
             else if (User.Name == null)
             {
-                User.Name = aliceRequest.Request.OriginalUtterance.Trim();
+                User.Name = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(aliceRequest.Request.OriginalUtterance.Trim().ToLower());
                 text = "Скажите дату рождения";
             }
             else if (User.DateOfBirth == default)
@@ -82,6 +83,7 @@ namespace HypothyroBot.Models.Session
                 if (aliceRequest.Request.Nlu.Tokens.First().Contains("муж"))
                 {
                     User.Gender = GenderType.Male;
+                    User.isPregnant = 0;
                 }
 
                 else if (aliceRequest.Request.Nlu.Tokens.First().Contains("жен"))
@@ -127,10 +129,13 @@ namespace HypothyroBot.Models.Session
                 }
             }
             else if ((User.Gender == GenderType.Female || User.Gender == GenderType.Unknown) && 18 < 
-                DateTime.Now.Subtract(User.DateOfBirth).TotalDays / 365.2425 && DateTime.Now.Subtract(User.DateOfBirth).TotalDays / 365.2425 < 45)
+                DateTime.Now.Subtract(User.DateOfBirth).TotalDays / 365.2425 && DateTime.Now.Subtract(User.DateOfBirth).TotalDays / 365.2425 < 45 && User.isPregnant == -1)
             {
                 if (aliceRequest.Request.Nlu.Tokens.First().StartsWith("да"))
                 {
+                    User.isPregnant = 1;
+                    db.Users.Update(User);
+                    await db.SaveChangesAsync();
                     text = "На данный момент ведение беременности не поддерживается, Спасибо, до свидания.";
                     return new AliceResponse(aliceRequest, text, true)
                     {
@@ -139,6 +144,7 @@ namespace HypothyroBot.Models.Session
                 }
                 if (aliceRequest.Request.Nlu.Tokens.First().StartsWith("не"))
                 {
+                    User.isPregnant = 0;
                     buttons = new List<ButtonModel>() { new ButtonModel("да", true), new ButtonModel("нет", true), };
                     text = "До операции приходилось ли принимать тироксин?";
                 }
@@ -183,7 +189,7 @@ namespace HypothyroBot.Models.Session
             }
             else if (User.PretreatmentDose > 0 && User.PretreatmentDrug == DrugType.None)
             {
-                var lt = new string[] { "l-тироксин", "элтироксин", "эл тироксин","l тироксин" };
+                var lt = new string[] { "l-тироксин", "элтироксин", "эл тироксин", "l тироксин", "л тироксин", "эль тироксин", "эльтироксин" };
                 if (aliceRequest.Request.Command.Contains("эутирокс"))
                 {
                     User.PretreatmentDrug = DrugType.Eutirox;

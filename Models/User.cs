@@ -15,6 +15,7 @@ namespace HypothyroBot.Models
         public DateTime DateOfBirth { get; set; }
         public GenderType Gender { get; set; }
         public double Weight { get; set; }
+        public int isPregnant { get; set; } = -1;
         public double PretreatmentDose { get; set; } = -2;
         public DrugType PretreatmentDrug { get; set; }
         [Column(TypeName = "date")]

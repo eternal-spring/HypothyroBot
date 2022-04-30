@@ -108,7 +108,7 @@ namespace HypothyroBot.Models.Session
                     {
                         if (User.Name == null)
                         {
-                            User.Name = aliceRequest.Request.OriginalUtterance.Trim();
+                            User.Name = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(aliceRequest.Request.OriginalUtterance.Trim().ToLower());
                             text = $"Ваше имя - {User.Name}.";
                         }
                         else if (User.DateOfBirth == default)
@@ -132,6 +132,7 @@ namespace HypothyroBot.Models.Session
                                 }
                                 if ((int.Parse(DateTime.Now.ToString("yyyyMMdd")) - int.Parse(User.DateOfBirth.ToString("yyyyMMdd"))) / 10000 < 18)
                                 {
+                                    text = "Навык предназначен для совершеннолетних пользователей, Спасибо, до свидания.";
                                     return new AliceResponse(aliceRequest, text, true);
                                 }
                                 text = $"Ваша дата рождения - {User.DateOfBirth.ToString("d MMMM yyyy", CultureInfo.CreateSpecificCulture("ru-RU"))}.";
@@ -250,10 +251,6 @@ namespace HypothyroBot.Models.Session
                                         bd.Year += 1900;
                                     }
                                     User.DateOfOperation = new DateTime((int)bd.Year, (int)bd.Month, (int)bd.Day);
-                                }
-                                if ((int.Parse(DateTime.Now.ToString("yyyyMMdd")) - int.Parse(User.DateOfBirth.ToString("yyyyMMdd"))) / 10000 < 18)
-                                {
-                                    return new AliceResponse(aliceRequest, text, true);
                                 }
                                 text = $"Дата вашей операции - {User.DateOfOperation.ToString("d MMMM yyyy", CultureInfo.CreateSpecificCulture("ru-RU"))}.";
                             }

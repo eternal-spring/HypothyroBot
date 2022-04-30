@@ -35,7 +35,7 @@ namespace HypothyroBot.Models.Session
                         text += "Если вы еще не сдали ТТГ, то поспешите, рекомендованный интервал заканчивается через неделю. ";
                         text += "Вы сдали ТТГ?";
                         tts = text.Replace("ТТГ", "тэтэг+э");
-                        return new AliceResponse(aliceRequest, text, new List<ButtonModel>() { new ButtonModel("да", true), new ButtonModel("нет", true) })
+                        return new AliceResponse(aliceRequest, text, tts, new List<ButtonModel>() { new ButtonModel("да", true), new ButtonModel("нет", true) })
                         {
                             SessionState = new SessionState() { Authorised = true, Id = User.Id, LastResponse = text },
                         };
@@ -46,7 +46,7 @@ namespace HypothyroBot.Models.Session
                         text += User.Tests.Any() ? "смены терапии. " : "операции. ";
                         text += "Вы сдали ТТГ? ";
                         tts = text.Replace("ТТГ", "тэтэг+э");
-                        return new AliceResponse(aliceRequest, text, new List<ButtonModel>() { new ButtonModel("да", true), new ButtonModel("нет", true) })
+                        return new AliceResponse(aliceRequest, text, tts, new List<ButtonModel>() { new ButtonModel("да", true), new ButtonModel("нет", true) })
                         {
                             SessionState = new SessionState() { Authorised = true, Id = User.Id, LastResponse = text },
                         };
@@ -66,7 +66,7 @@ namespace HypothyroBot.Models.Session
                 {
                     text += "Пришло время контроля ТТГ.  Вы сдали ТТГ?";
                     tts = text.Replace("ТТГ", "тэтэг+э");
-                    return new AliceResponse(aliceRequest, text, new List<ButtonModel>() { new ButtonModel("да", true), new ButtonModel("нет", true) })
+                    return new AliceResponse(aliceRequest, text, tts, new List<ButtonModel>() { new ButtonModel("да", true), new ButtonModel("нет", true) })
                     {
                         SessionState = new SessionState() { Authorised = true, Id = User.Id, LastResponse = text },
                     };
