@@ -15,7 +15,7 @@ namespace HypothyroBot.Models.Session
         public async Task<AliceResponse> HandleRequest(AliceRequest aliceRequest, ApplicationContext db)
         {
             string text = "Сдавали ли вы после этого контрольный анализ на ТТГ?";
-            string tts = null;
+            string tts = text.Replace("ТТГ", "тэтэг+э");
             var buttons = new List<ButtonModel>();
             if (aliceRequest.State.Session.LastResponse == text)
             {

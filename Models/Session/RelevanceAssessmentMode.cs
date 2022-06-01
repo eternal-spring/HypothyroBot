@@ -70,7 +70,7 @@ namespace HypothyroBot.Models.Session
                         }
                         else
                         {
-                            text = $"Итак, вас зовут {User.Name}, вы родились {User.DateOfBirth.ToString("D", CultureInfo.CreateSpecificCulture("ru-RU"))}, весите {User.Weight} кг, ";
+                            text = $"Итак, вас зовут {User.Name}, вы родились {User.DateOfBirth.ToString("d MMMM yyyy", CultureInfo.CreateSpecificCulture("ru-RU"))}, весите {User.Weight} кг, ";
                             if (User.Gender != GenderType.None)
                             {
                                 text += $"{ ((DescriptionAttribute)User.Gender.GetType().GetMember(User.Gender.ToString())[0].GetCustomAttributes(typeof(DescriptionAttribute), false)[0]).Description}, ";
@@ -91,7 +91,7 @@ namespace HypothyroBot.Models.Session
                                     text += $"{ ((DescriptionAttribute)User.PretreatmentDrug.GetType().GetMember(User.PretreatmentDrug.ToString())[0].GetCustomAttributes(typeof(DescriptionAttribute), false)[0]).Description}а, ";
                                 }
                             }
-                            text += $"операция была {User.DateOfOperation.ToString("D", CultureInfo.CreateSpecificCulture("ru-RU"))}, ";
+                            text += $"операция была {User.DateOfOperation.ToString("d MMMM yyyy", CultureInfo.CreateSpecificCulture("ru-RU"))}, ";
                             if (User.ThyroidCondition == ThyroidType.CompletelyRemoved)
                             {
                                 text += "щитовидка была удалена вся, ";
