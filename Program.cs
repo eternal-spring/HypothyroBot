@@ -29,6 +29,13 @@ namespace HypothyroBot
          Host.CreateDefaultBuilder(args)
             .ConfigureWebHostDefaults(webBuilder =>
             {
+                webBuilder.UseKestrel(options =>
+                {
+                    options.ConfigureEndpointDefaults(listenOptions =>
+                    {
+                        listenOptions.UseConnectionLogging();
+                    });
+                });
                 webBuilder.UseStartup<Startup>();
             });
     }
