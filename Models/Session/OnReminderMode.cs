@@ -125,9 +125,11 @@ namespace HypothyroBot.Models.Session
                 }
                 else if (aliceRequest.Request.Command.Contains("другая доза"))
                 {
-                    text = "Скажите, сколько мкг тироксина вы принимаете после операции?";
+                    text = "Скажите, сколько мкг тироксина вы теперь принимаете?";
                     User.TreatmentDose = -2;
                     User.TreatmentDrug = DrugType.None;
+                    db.Users.Update(User);
+                    await db.SaveChangesAsync();
                     buttons = null;
                 }
             }
