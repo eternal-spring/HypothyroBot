@@ -342,7 +342,7 @@ namespace HypothyroBot.Models.Session
                                                                                                                 new ButtonModel("другой", true) };
                                     return new AliceResponse(aliceRequest, "Не поняла, повторите", buttons);
                                 }
-                                text = $"Вам назначено {User.TreatmentDose} мкг левотироксина после операции.";
+                                text = $"Теперь вы принимаете {User.TreatmentDose} мкг левотироксина.";
                                 if (User.TreatmentDrug != DrugType.Another)
                                 {
                                     text += $"Препарат - { ((DescriptionAttribute)User.TreatmentDrug.GetType().GetMember(User.TreatmentDrug.ToString())[0].GetCustomAttributes(typeof(DescriptionAttribute), false)[0]).Description}. ";

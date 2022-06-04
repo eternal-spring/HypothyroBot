@@ -19,9 +19,12 @@ namespace HypothyroBot.Models.Session
             string text = "";
             string tts = null;
             var buttons = new List<ButtonModel>();
-            if (User.Mode != ModeType.ResultsCollecting)
+            if (User.Mode != ModeType.ResultsCollecting || aliceRequest.Session.New)
             {
-                User.Tests?.Add(new Test {TshLevel = -2, Id = (User.Tests?.Count + 1).ToString() });
+                if (User.Tests?.Last().TshLevel != -2)
+                {
+                    User.Tests?.Add(new Test { TshLevel = -2, Id = (User.Tests?.Count + 1).ToString() });
+                }
                 text = "Скажите значение ТТГ (в мкМЕ/мл).";
                 User.Mode = ModeType.ResultsCollecting;
                 db.Users.Update(User);
