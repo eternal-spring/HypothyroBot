@@ -1,38 +1,77 @@
-﻿version: '3.4'
-
-networks:
-  hypothyrobot-dev:
-    driver: bridge 
+﻿version: '3.8'
 
 services:
-  hypothyrobot:
-    image: eternalspring/hypothyrobot:latest
-    depends_on:
-      - "host.docker.internal"
-    build:
-      context: .
-      dockerfile: Dockerfile
+  proxyserver:
+    image: nginx:mainline-alpine
+    container_name: proxyserver
+    restart: always
     ports:
-      - "8000:80"   
-    environment:
-      DB_CONNECTION_STRING: "host=host.docker.internal;port=5432;database=usersdb;username=postgres;password=elpsycongroo"
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx-conf:/etc/nginx/conf.d
+      - web-root:/var/www/html
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+      - dhparam:/etc/ssl/certs
     networks:
-      - hypothyrobot-dev  
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-
-  host.docker.internal:
+      - app
+  certbot:
+    image: certbot/certbot:latest
+    container_name: certbot
+    depends_on:
+      - proxyserver
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+      - web-root:/var/www/html
+    command: certonly --webroot --webroot-path=/var/www/html --email v.bietepage.com --agree-tos --no-eff-email --force-renewal -d example.com www.example.com
+  hypothyrobot:
+    container_name: hypothyrobot
+    restart: always
+    image: eternalspring/hypothyrobot:v5
+    depends_on:
+      - postgres_image
+      - proxyserver
+    expose:
+      - "5000"   
+    volumes:
+      - web-root:/var/www/html
+    environment:
+      DB_CONNECTION_STRING: "host=postgres_image;port=5432;database=usersdb;username=postgres;password=elpsycongroo"
+    networks:
+      - app  
+  postgres_image:
+    container_name: postgres_image
     image: postgres:latest
     ports:
-      - "5432"
+      - "5432:5432"
     restart: always
+    volumes:
+      - db_volume:/var/lib/postgresql/data/
     environment:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "elpsycongroo"
       POSTGRES_DB: "usersdb"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
     networks:
-      - hypothyrobot-dev
+      - app
 volumes:
   db_volume:
-         
-    
+  certbot-etc:
+  certbot-var:
+  web-root:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/ya/Skill/views/
+      o: bind
+  dhparam:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/ya/Skill/dhparam/
+      o: bind
+networks:
+  hypothyrobot-dev:
+    driver: bridge 
